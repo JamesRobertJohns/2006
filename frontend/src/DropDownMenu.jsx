@@ -118,6 +118,7 @@ const DropDownMenu = () => {
       <div className="dropdown">
         <button className="dropbtn">Lease Life</button>
         <div className="dropdown-contentPRLL">
+        <label htmlFor="leaseLife">lease Life:{leaseLife} years</label>
           <input
             type="range"
             id="leaseLife"

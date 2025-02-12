@@ -6,6 +6,7 @@ svg path {
 svg path:hover {
     stroke: #000000;
     stroke-width: 3;
+    cursor: pointer;
     filter: drop-shadow(0px 0px 5px rgb(0, 0, 0));
 }
 
