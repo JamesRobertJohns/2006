@@ -1,6 +1,6 @@
 import './App.css'
 import Map from "react-map-gl/maplibre";
-import DropDownMenu from './dropdownMenu';
+import DropDownMenu from './DropDownMenu';
 import RegionalMap from './RegionalMap';
 
 function App() {
