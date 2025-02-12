@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from "prop-types";
 import "./Filter.css";
+
 
 function Filter({optionName="", optionList=[]}) {
 
@@ -8,20 +9,17 @@ function Filter({optionName="", optionList=[]}) {
 
   return (
     <div>
-
-     <select className="filter-button" value={option} onChange={()=>(setOption(event.target.value))}> 
+      <select className={`filter-button ${option ? 'filter-button-selected' : ''}`} value={option} onChange={()=>setOption(event.target.value)}> 
         <option value="" key="">{optionName}</option>
         {optionList.map((value, key)=> (<option key={key}>{value}</option>))}
-     </select>
-
+      </select>
     </div>
-
   );
 }
 
 Filter.propTypes = {
   optionName: PropTypes.string,
-  optionList: PropTypes.arrayOf(PropTypes.string),
+  optionList: PropTypes.array,
 }
 
 export default Filter

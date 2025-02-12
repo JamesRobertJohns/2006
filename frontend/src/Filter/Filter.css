@@ -1,4 +1,4 @@
-.filter-bar-box .filter-button {
+.filter-button {
   width: 150px;
   height: 50px;
   font: 16px;
@@ -10,9 +10,9 @@
   border:none;
 }
 
-.filter-bar-box .filter-button:hover{
+.filter-button:hover {
   cursor: pointer;  
-  background: #a9a9a9; /* placeholder */
+  background: #a9a9a9; 
 }
 
 .filter-bar-box {
@@ -21,3 +21,15 @@
   align-items: center;
   justify-content: center;
 }
+
+.filter-button-selected {
+  background-color: #62fcaf;
+}
+
+.filter-button-selected:hover {
+  cursor: pointer;  
+  background: #7bae37; 
+}
+
+/* for ref https://muffingroup.com/blog/green-color-palette/ */
+
