@@ -6,7 +6,6 @@ import ProgressBar from "./ProgressBar/ProgressBar.jsx";
 import FilterBar from "./FilterBar.jsx";
 
 function App() {
-
   
   return (
     <>
@@ -16,7 +15,6 @@ function App() {
         <RegionalMap/>
       </div>
     </>
-
   );
 }
 
