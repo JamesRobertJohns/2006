@@ -10,7 +10,6 @@ function App() {
   
   return (
     <>
-      <ProgressBar />
       <FilterBar />
       <br/>
       <div className="static-map-box">
