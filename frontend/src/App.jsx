@@ -1,15 +1,20 @@
+import './App.css'
 import Map from "react-map-gl/maplibre";
-
+import RegionalMap from './RegionalMap';
+import Filter from "./Filter/Filter.jsx";
+import ProgressBar from "./ProgressBar/ProgressBar.jsx";
+import FilterBar from "./FilterBar.jsx";
 
 function App() {
+  
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <Map
-      style={{ width: '100%', height: '100%' }}
-      maxBounds={[103.596, 1.1443, 104.1, 1.4835]}
-      mapStyle="https://www.onemap.gov.sg/maps/json/raster/mbstyle/Default.json"
-    />
-  </div>
+    <>
+      <FilterBar />
+      <br/>
+      <div className="static-map-box">
+        <RegionalMap/>
+      </div>
+    </>
   );
 }
 
