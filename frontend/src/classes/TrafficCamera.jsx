@@ -5,7 +5,6 @@ class TrafficCamera {
     this.latitude = latitude;
     this.longitude = longitude;
     this.timestamp = timestamp;
-    console.log(this.id, this.latitude, this.longitude);
   }
 
   getUrl() {
