@@ -38,7 +38,12 @@ const fetchHdbs = async (setHdbs) => {
     const response = await fetch("./hdb.json");
     const data = await response.json();
     if (data) {
-      const smallData = data.slice(0, 10);
+      const shuffledData = [...data];
+      for (let i = shuffledData.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledData[i], shuffledData[j]] = [shuffledData[j], shuffledData[i]];
+      }
+      const smallData = shuffledData.slice(0, 250);
       const hdbs = smallData.map((item) => {
         return new Hdb(
           item.month,
