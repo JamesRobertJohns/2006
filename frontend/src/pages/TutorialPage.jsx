@@ -1,3 +1,5 @@
+import HousePin from "../HousePin.jsx";
+
 function TutorialPage() {
   return (
     <div>
@@ -5,6 +7,7 @@ function TutorialPage() {
       <ul>
         <li>to include tutorial</li>
       </ul>
+      <HousePin />
     </div>
   );
 }

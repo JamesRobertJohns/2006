@@ -9,6 +9,8 @@ import  {
   GeolocateControl,
 } from "react-map-gl/maplibre";
 
+import HousePin from "./HousePin.jsx";
+
 import { useState, useEffect } from "react";
 import TrafficCamera from "./classes/TrafficCamera.jsx";
 import Hdb from "./classes/Hdb.jsx";
@@ -114,6 +116,7 @@ function DynamicMap() {
         <ScaleControl />
 
 
+        {/*
         {trafficCameras.map((trafficCamera) => (
           <Marker
             key={trafficCamera.id}
@@ -126,14 +129,27 @@ function DynamicMap() {
             />
           </Marker>
         ))}
+        */}
+
+
+        {/*
+        
+        there's dupliates in addres need to check the reason why 
+
+        using map, key needs to be supplied and supposed to be unique
+
+        otherwise will have warnings and may have future bugs
+
+        */}
+
         {hdbs.map((hdb) => (
           <Marker
             latitude={hdb.latitude}
             longitude={hdb.longitude}
-            style={{ background: "red", color: "white", padding: 4 }}
+            key={`marker-${hdb.address}`} 
+            anchor="bottom"
           >
-            {console.log(hdb.address, hdb.latitude, hdb.longitude)}
-            {hdb.address}
+            <HousePin />
           </Marker>
         ))}
 
