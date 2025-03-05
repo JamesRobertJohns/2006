@@ -5,3 +5,17 @@
   justify-content: center;
   margin: 2em;
 }
+
+.hdb-marker {
+  height: 69px;
+  width: 47px;
+  cursor: pointer;
+}
+
+.school-marker {
+
+}
+
+.mrt-marker {
+
+}

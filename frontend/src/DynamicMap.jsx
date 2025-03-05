@@ -1,5 +1,5 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import Map, { Marker } from "react-map-gl/maplibre";
+import  { Map, Marker, NavigationControl } from "react-map-gl/maplibre";
 import { useState, useEffect } from "react";
 import TrafficCamera from "./classes/TrafficCamera.jsx";
 import Hdb from "./classes/Hdb.jsx";
@@ -88,6 +88,7 @@ function DynamicMap() {
       <Map
         maxBounds={[103.596, 1.1443, 104.1, 1.4835]}
         mapStyle="https://www.onemap.gov.sg/maps/json/raster/mbstyle/Default.json"
+        /* this is the TILEjson get */
         initialViewState={{
           longitude: initialLongitude,
           latitude: initialLatitude,
@@ -116,6 +117,8 @@ function DynamicMap() {
             {hdb.address}
           </Marker>
         ))}
+
+        <NavigationControl />
       </Map>
     </div>
   );

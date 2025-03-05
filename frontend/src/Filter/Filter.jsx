@@ -9,7 +9,12 @@ function Filter({optionName="", optionList=[]}) {
 
   return (
     <div>
-      <select className={`filter-button ${option ? 'filter-button-selected' : ''}`} value={option} onChange={()=>setOption(event.target.value)}> 
+
+      <select 
+        className={`filter-button ${option ? 'filter-button-selected' : ''}`} 
+        value={option} 
+        onChange={()=>setOption(event.target.value)
+      }> 
         <option value="" key="">{optionName}</option>
         {optionList.map((value, key)=> (<option key={key}>{value}</option>))}
       </select>
