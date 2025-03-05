@@ -1,5 +1,14 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import  { Map, Marker, NavigationControl } from "react-map-gl/maplibre";
+
+import  { 
+  Map, 
+  Marker, 
+  NavigationControl,
+  FullscreenControl,
+  ScaleControl,
+  GeolocateControl,
+} from "react-map-gl/maplibre";
+
 import { useState, useEffect } from "react";
 import TrafficCamera from "./classes/TrafficCamera.jsx";
 import Hdb from "./classes/Hdb.jsx";
@@ -95,6 +104,16 @@ function DynamicMap() {
           zoom: initialZoom,
         }}
       >
+
+
+        {/* imma place nav controls here */}
+
+        <GeolocateControl position="top-left" />
+        <FullscreenControl position="top-left" />
+        <NavigationControl position="top-left" />
+        <ScaleControl />
+
+
         {trafficCameras.map((trafficCamera) => (
           <Marker
             key={trafficCamera.id}
@@ -118,7 +137,6 @@ function DynamicMap() {
           </Marker>
         ))}
 
-        <NavigationControl />
       </Map>
     </div>
   );
