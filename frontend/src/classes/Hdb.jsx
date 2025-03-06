@@ -50,6 +50,19 @@ class Hdb {
     this.longitude = longitude;
   }
 
+ 
+  getFlatType() {
+    return this.flat_type;
+  }
+
+  getLeaseLife() {
+    return this.remaining_lease;
+  }
+
+  getPrice() {
+    return this.resale_price;
+  }
+
   getLatitude() {
     return this.latitude;
   }

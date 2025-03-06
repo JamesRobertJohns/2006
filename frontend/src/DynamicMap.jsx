@@ -1,4 +1,18 @@
 import "maplibre-gl/dist/maplibre-gl.css";
+
+import  { 
+  Map, 
+  Marker, 
+  Popup,
+  NavigationControl,
+  FullscreenControl,
+  ScaleControl,
+  GeolocateControl,
+} from "react-map-gl/maplibre";
+
+import HousePin from "./HousePin.jsx";
+
+import { useState, useEffect, useMemo } from "react";
 import Map from "react-map-gl/maplibre";
 import { useState, useEffect } from "react";
 import TrafficCamera from "./classes/TrafficCamera.jsx";
@@ -71,20 +85,58 @@ const fetchHdbs = async (setHdbs) => {
 };
 
 function DynamicMap() {
+
   const [trafficCameras, setTrafficCameras] = useState([]);
   const [hdbs, setHdbs] = useState([]);
 
   const [showHdb, setShowHdb] = useState(true);
   const [showTrafficCamera, setShowTrafficCamera] = useState(true);
 
+  const [popupInfo, setPopupInfo] = useState(null);
+
   useEffect(() => {
     fetchTrafficCameras(setTrafficCameras);
     fetchHdbs(setHdbs);
   }, []);
 
+
+     {/*
+        
+        there's dupliates in addres need to check the reason why 
+
+        using var.map(), key needs to be supplied and supposed to be unique
+
+        otherwise will have warnings and may have future bugs
+
+        */}
+
+  const hdbpins = useMemo(
+    ()=> 
+      hdbs.map((hdb) => (
+        <Marker
+          latitude={hdb.latitude}
+          longitude={hdb.longitude}
+          key={`marker-${hdb.address}`} 
+          anchor="bottom"
+          onClick={e => {
+            e.originalEvent.stopPropagation(); // this prevents propogation to Map
+            setPopupInfo(hdb);
+          }}
+        >
+          <HousePin />
+        </Marker> 
+      )),
+    [hdbs] // dependencies, rn it is just hdbs, but can put filtered-hdb or sth to reflect changes
+  );
+
   return (
-    <div>
-      <div
+    <div
+      style={{
+        width: "100wh",
+        height: "100vh",
+      }}
+    >
+       <div
         style={{
           position: "absolute",
           zIndex: 1,
@@ -106,26 +158,66 @@ function DynamicMap() {
           <span>Display Traffic Camera</span>
         </div>
       </div>
-      <div
-        style={{
-          width: "100wh",
-          height: "100vh",
+      <Map
+        maxBounds={[103.596, 1.1443, 104.1, 1.4835]}
+        mapStyle="https://www.onemap.gov.sg/maps/json/raster/mbstyle/Default.json"
+        /* this is the TILEjson get */
+        initialViewState={{
+          longitude: initialLongitude,
+          latitude: initialLatitude,
+          zoom: initialZoom,
         }}
       >
-        <Map
-          maxBounds={[103.596, 1.1443, 104.1, 1.4835]}
-          mapStyle="https://www.onemap.gov.sg/maps/json/raster/mbstyle/Default.json"
-          initialViewState={{
-            longitude: initialLongitude,
-            latitude: initialLatitude,
-            zoom: initialZoom,
-          }}
-        >
-          {showTrafficCamera &&
+
+
+        {/* imma place nav controls here */}
+
+        <GeolocateControl 
+          position="top-left" 
+          trackUserLocation="false"
+          showAccuracyCircle="false"
+        />
+        <FullscreenControl position="top-left" />
+        <NavigationControl position="top-left" />
+        <ScaleControl />
+
+
+        {/*
+        {trafficCameras.map((trafficCamera) => (
+          <Marker
+            key={trafficCamera.id}
+            latitude={trafficCamera.latitude}
+            longitude={trafficCamera.longitude}
+          >
+            <img
+              src={trafficCamera.url}
+              style={{ width: 60, height: "auto" }}
+            />
+          </Marker>
+        ))}
+        */}
+              
+        {hdbpins}
+        
+        {popupInfo && (
+          <Popup
+            anchor="top"
+            longitude={Number(popupInfo.longitude)}
+            latitude={Number(popupInfo.latitude)}
+            onClose={() => setPopupInfo(null)}
+          >
+            <div>
+              <p>{popupInfo.address}</p>
+            </div>
+          </Popup>
+        )}
+
+      </Map>
+
+    
+      {showTrafficCamera &&
             trafficCameras.map((trafficCamera) => trafficCamera.getMapIcon())}
           {showHdb && hdbs.map((hdb) => hdb.getMapIcon())}
-        </Map>
-      </div>
     </div>
   );
 }
