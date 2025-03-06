@@ -1,5 +1,5 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import Map, { Marker } from "react-map-gl/maplibre";
+import Map from "react-map-gl/maplibre";
 import { useState, useEffect } from "react";
 import TrafficCamera from "./classes/TrafficCamera.jsx";
 import Hdb from "./classes/Hdb.jsx";
@@ -43,7 +43,7 @@ const fetchHdbs = async (setHdbs) => {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffledData[i], shuffledData[j]] = [shuffledData[j], shuffledData[i]];
       }
-      const smallData = shuffledData.slice(0, 250);
+      const smallData = shuffledData.slice(0, 75);
       const hdbs = smallData.map((item) => {
         return new Hdb(
           item.month,
@@ -94,28 +94,8 @@ function DynamicMap() {
           zoom: initialZoom,
         }}
       >
-        {trafficCameras.map((trafficCamera) => (
-          <Marker
-            key={trafficCamera.id}
-            latitude={trafficCamera.latitude}
-            longitude={trafficCamera.longitude}
-          >
-            <img
-              src={trafficCamera.url}
-              style={{ width: 60, height: "auto" }}
-            />
-          </Marker>
-        ))}
-        {hdbs.map((hdb) => (
-          <Marker
-            latitude={hdb.latitude}
-            longitude={hdb.longitude}
-            style={{ background: "red", color: "white", padding: 4 }}
-          >
-            {console.log(hdb.address, hdb.latitude, hdb.longitude)}
-            {hdb.address}
-          </Marker>
-        ))}
+        {trafficCameras.map((trafficCamera) => trafficCamera.getMapIcon())}
+        {hdbs.map((hdb) => hdb.getMapIcon())}
       </Map>
     </div>
   );
