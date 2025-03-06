@@ -9,7 +9,7 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     borderRadius: "50%",
-    border: "2px solid" + primaryColor,
+    border: "2.4px solid" + primaryColor,
     backgroundColor: "white",
     padding: 3,
   },

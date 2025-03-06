@@ -3,6 +3,7 @@ import Map from "react-map-gl/maplibre";
 import { useState, useEffect } from "react";
 import TrafficCamera from "./classes/TrafficCamera.jsx";
 import Hdb from "./classes/Hdb.jsx";
+import Switch from "@mui/material/Switch";
 
 const initialLongitude = 103.81895378099354;
 const initialLatitude = 1.356474868742945;
@@ -73,30 +74,58 @@ function DynamicMap() {
   const [trafficCameras, setTrafficCameras] = useState([]);
   const [hdbs, setHdbs] = useState([]);
 
+  const [showHdb, setShowHdb] = useState(true);
+  const [showTrafficCamera, setShowTrafficCamera] = useState(true);
+
   useEffect(() => {
     fetchTrafficCameras(setTrafficCameras);
     fetchHdbs(setHdbs);
   }, []);
 
   return (
-    <div
-      style={{
-        width: "100wh",
-        height: "100vh",
-      }}
-    >
-      <Map
-        maxBounds={[103.596, 1.1443, 104.1, 1.4835]}
-        mapStyle="https://www.onemap.gov.sg/maps/json/raster/mbstyle/Default.json"
-        initialViewState={{
-          longitude: initialLongitude,
-          latitude: initialLatitude,
-          zoom: initialZoom,
+    <div>
+      <div
+        style={{
+          position: "absolute",
+          zIndex: 1,
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          background: "white",
         }}
       >
-        {trafficCameras.map((trafficCamera) => trafficCamera.getMapIcon())}
-        {hdbs.map((hdb) => hdb.getMapIcon())}
-      </Map>
+        <div>
+          <Switch defaultChecked onChange={() => setShowHdb(!showHdb)} />
+          <span>Display HDB</span>
+        </div>
+        <div>
+          <Switch
+            defaultChecked
+            onChange={() => setShowTrafficCamera(!showTrafficCamera)}
+          />
+          <span>Display Traffic Camera</span>
+        </div>
+      </div>
+      <div
+        style={{
+          width: "100wh",
+          height: "100vh",
+        }}
+      >
+        <Map
+          maxBounds={[103.596, 1.1443, 104.1, 1.4835]}
+          mapStyle="https://www.onemap.gov.sg/maps/json/raster/mbstyle/Default.json"
+          initialViewState={{
+            longitude: initialLongitude,
+            latitude: initialLatitude,
+            zoom: initialZoom,
+          }}
+        >
+          {showTrafficCamera &&
+            trafficCameras.map((trafficCamera) => trafficCamera.getMapIcon())}
+          {showHdb && hdbs.map((hdb) => hdb.getMapIcon())}
+        </Map>
+      </div>
     </div>
   );
 }
