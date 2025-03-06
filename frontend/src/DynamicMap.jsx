@@ -1,8 +1,8 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 
-import  { 
-  Map, 
-  Marker, 
+import {
+  Map,
+  Marker,
   Popup,
   NavigationControl,
   FullscreenControl,
@@ -13,8 +13,6 @@ import  {
 import HousePin from "./HousePin.jsx";
 
 import { useState, useEffect, useMemo } from "react";
-import Map from "react-map-gl/maplibre";
-import { useState, useEffect } from "react";
 import TrafficCamera from "./classes/TrafficCamera.jsx";
 import Hdb from "./classes/Hdb.jsx";
 import Switch from "@mui/material/Switch";
@@ -85,7 +83,6 @@ const fetchHdbs = async (setHdbs) => {
 };
 
 function DynamicMap() {
-
   const [trafficCameras, setTrafficCameras] = useState([]);
   const [hdbs, setHdbs] = useState([]);
 
@@ -99,8 +96,8 @@ function DynamicMap() {
     fetchHdbs(setHdbs);
   }, []);
 
-
-     {/*
+  {
+    /*
         
         there's dupliates in addres need to check the reason why 
 
@@ -108,23 +105,24 @@ function DynamicMap() {
 
         otherwise will have warnings and may have future bugs
 
-        */}
+        */
+  }
 
   const hdbpins = useMemo(
-    ()=> 
+    () =>
       hdbs.map((hdb) => (
         <Marker
           latitude={hdb.latitude}
           longitude={hdb.longitude}
-          key={`marker-${hdb.address}`} 
+          key={`marker-${hdb.address}`}
           anchor="bottom"
-          onClick={e => {
+          onClick={(e) => {
             e.originalEvent.stopPropagation(); // this prevents propogation to Map
             setPopupInfo(hdb);
           }}
         >
           <HousePin />
-        </Marker> 
+        </Marker>
       )),
     [hdbs] // dependencies, rn it is just hdbs, but can put filtered-hdb or sth to reflect changes
   );
@@ -136,7 +134,7 @@ function DynamicMap() {
         height: "100vh",
       }}
     >
-       <div
+      <div
         style={{
           position: "absolute",
           zIndex: 1,
@@ -168,12 +166,10 @@ function DynamicMap() {
           zoom: initialZoom,
         }}
       >
-
-
         {/* imma place nav controls here */}
 
-        <GeolocateControl 
-          position="top-left" 
+        <GeolocateControl
+          position="top-left"
           trackUserLocation="false"
           showAccuracyCircle="false"
         />
@@ -181,24 +177,8 @@ function DynamicMap() {
         <NavigationControl position="top-left" />
         <ScaleControl />
 
+        {/* {hdbpins} */}
 
-        {/*
-        {trafficCameras.map((trafficCamera) => (
-          <Marker
-            key={trafficCamera.id}
-            latitude={trafficCamera.latitude}
-            longitude={trafficCamera.longitude}
-          >
-            <img
-              src={trafficCamera.url}
-              style={{ width: 60, height: "auto" }}
-            />
-          </Marker>
-        ))}
-        */}
-              
-        {hdbpins}
-        
         {popupInfo && (
           <Popup
             anchor="top"
@@ -212,12 +192,10 @@ function DynamicMap() {
           </Popup>
         )}
 
+        {showTrafficCamera &&
+          trafficCameras.map((trafficCamera) => trafficCamera.getMapIcon())}
+        {showHdb && hdbs.map((hdb) => hdb.getMapIcon(setPopupInfo))}
       </Map>
-
-    
-      {showTrafficCamera &&
-            trafficCameras.map((trafficCamera) => trafficCamera.getMapIcon())}
-          {showHdb && hdbs.map((hdb) => hdb.getMapIcon())}
     </div>
   );
 }

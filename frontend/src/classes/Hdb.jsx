@@ -50,7 +50,6 @@ class Hdb {
     this.longitude = longitude;
   }
 
- 
   getFlatType() {
     return this.flat_type;
   }
@@ -71,9 +70,16 @@ class Hdb {
     return this.longitude;
   }
 
-  getMapIcon() {
+  getMapIcon(setPopupInfo) {
     return (
-      <Marker latitude={this.latitude} longitude={this.longitude}>
+      <Marker
+        latitude={this.latitude}
+        longitude={this.longitude}
+        onClick={(e) => {
+          e.originalEvent.stopPropagation();
+          setPopupInfo(this);
+        }}
+      >
         <div style={styles.iconContainer}>
           <FaHome size={30} style={styles.icon} />
         </div>
