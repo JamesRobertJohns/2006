@@ -3,6 +3,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import  { 
   Map, 
   Marker, 
+  Popup,
   NavigationControl,
   FullscreenControl,
   ScaleControl,
@@ -11,7 +12,7 @@ import  {
 
 import HousePin from "./HousePin.jsx";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import TrafficCamera from "./classes/TrafficCamera.jsx";
 import Hdb from "./classes/Hdb.jsx";
 
@@ -81,13 +82,46 @@ const fetchHdbs = async (setHdbs) => {
 };
 
 function DynamicMap() {
+
   const [trafficCameras, setTrafficCameras] = useState([]);
   const [hdbs, setHdbs] = useState([]);
+
+  const [popupInfo, setPopupInfo] = useState(null);
 
   useEffect(() => {
     fetchTrafficCameras(setTrafficCameras);
     fetchHdbs(setHdbs);
   }, []);
+
+
+     {/*
+        
+        there's dupliates in addres need to check the reason why 
+
+        using var.map(), key needs to be supplied and supposed to be unique
+
+        otherwise will have warnings and may have future bugs
+
+        */}
+
+  const hdbpins = useMemo(
+    ()=> 
+      hdbs.map((hdb) => (
+        <Marker
+          latitude={hdb.latitude}
+          longitude={hdb.longitude}
+          key={`marker-${hdb.address}`} 
+          anchor="bottom"
+          onClick={e => {
+            e.originalEvent.stopPropagation(); // this prevents propogation to Map
+            setPopupInfo(hdb);
+          }}
+        >
+          <HousePin />
+        </Marker> 
+      )),
+    [hdbs] // dependencies, rn it is just hdbs, but can put filtered-hdb or sth to reflect changes
+  );
 
   return (
     <div
@@ -110,7 +144,11 @@ function DynamicMap() {
 
         {/* imma place nav controls here */}
 
-        <GeolocateControl position="top-left" />
+        <GeolocateControl 
+          position="top-left" 
+          trackUserLocation="false"
+          showAccuracyCircle="false"
+        />
         <FullscreenControl position="top-left" />
         <NavigationControl position="top-left" />
         <ScaleControl />
@@ -130,28 +168,21 @@ function DynamicMap() {
           </Marker>
         ))}
         */}
-
-
-        {/*
+              
+        {hdbpins}
         
-        there's dupliates in addres need to check the reason why 
-
-        using map, key needs to be supplied and supposed to be unique
-
-        otherwise will have warnings and may have future bugs
-
-        */}
-
-        {hdbs.map((hdb) => (
-          <Marker
-            latitude={hdb.latitude}
-            longitude={hdb.longitude}
-            key={`marker-${hdb.address}`} 
-            anchor="bottom"
+        {popupInfo && (
+          <Popup
+            anchor="top"
+            longitude={Number(popupInfo.longitude)}
+            latitude={Number(popupInfo.latitude)}
+            onClose={() => setPopupInfo(null)}
           >
-            <HousePin />
-          </Marker>
-        ))}
+            <div>
+              <p>{popupInfo.address}</p>
+            </div>
+          </Popup>
+        )}
 
       </Map>
     </div>
