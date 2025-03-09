@@ -1,7 +1,11 @@
 import FilterBar from "../FilterBar.jsx"
+import RegionalMap from "../RegionalMap.jsx";
 function LandingPage() {
   return (
-     <FilterBar /> 
+    <div>
+      <FilterBar /> 
+      <RegionalMap />
+      </div>
   );
 };
 
