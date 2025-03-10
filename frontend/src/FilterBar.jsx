@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Filter from "./Filter/Filter.jsx";
+import { Link } from "react-router-dom";
 
 function FilterBar() {
-
   const regionList = [
     "Central", 
     "East", 
@@ -41,13 +41,54 @@ function FilterBar() {
     "90 - 99 yr",
   ];
 
+  // the filters are set to display default OptionName
+  // if the values are set to NULL
+  const [selected, setSelected] = useState({
+    region: "",
+    priceRange: "",
+    roomType: "",
+    leaseLife: "",
+  });
+
+  const handleSelectChange = (filter, option) => {
+    setSelected((s) => ({
+      ...s,
+      [filter]: option,
+    }));
+  };
+
+  const isAllSelected = !Object.values(selected).includes("");
+
   return (
-      <div className='filter-bar-box'>
-        <Filter optionName="Region" optionList={regionList} />
-        <Filter optionName="Price Range" optionList={priceRangeList}/>
-        <Filter optionName="Room Type" optionList={roomTypeList} />
-        <Filter optionName="Lease Life" optionList={leaseLifeList} />
-      </div>
+    <div className='filter-bar-box'>
+      <Filter 
+        optionName="Region" 
+        optionList={regionList} 
+        option={selected.region}
+        onChange={(value) => handleSelectChange("region", value)}
+      />
+      <Filter 
+        optionName="Price Range" optionList={priceRangeList}
+        option={selected.priceRange}
+        onChange={(value) => handleSelectChange("priceRange", value)}
+      />
+      <Filter 
+        optionName="Room Type" 
+        optionList={roomTypeList}
+        option={selected.roomType}
+        onChange={(value) => handleSelectChange("roomType", value)}
+      />
+      <Filter 
+        optionName="Lease Life" 
+        optionList={leaseLifeList}
+        option={selected.leaseLife}
+        onChange={(value) => handleSelectChange("leaseLife", value)}
+      />
+
+      {isAllSelected && (
+        <button><Link to="/map">Search</Link></button>
+      )}
+    </div>
   );
 }
 

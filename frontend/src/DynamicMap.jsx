@@ -156,6 +156,7 @@ function DynamicMap() {
           <span>Display Traffic Camera</span>
         </div>
       </div>
+
       <Map
         maxBounds={[103.596, 1.1443, 104.1, 1.4835]}
         mapStyle="https://www.onemap.gov.sg/maps/json/raster/mbstyle/Default.json"
@@ -170,8 +171,8 @@ function DynamicMap() {
 
         <GeolocateControl
           position="top-left"
-          trackUserLocation="false"
-          showAccuracyCircle="false"
+          trackUserLocation={false}
+          showAccuracyCircle={false}
         />
         <FullscreenControl position="top-left" />
         <NavigationControl position="top-left" />
