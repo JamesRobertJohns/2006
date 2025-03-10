@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import Filter from "./Filter/Filter.jsx";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function FilterBar() {
+  const navigate = useNavigate();
+  const handleSearch = () => {
+    navigate('\map');
+  };
+
   const regionList = [
     "Central", 
     "East", 
@@ -50,6 +55,8 @@ function FilterBar() {
     leaseLife: "",
   });
 
+ 
+  // updates the key value pair
   const handleSelectChange = (filter, option) => {
     setSelected((s) => ({
       ...s,
@@ -57,38 +64,54 @@ function FilterBar() {
     }));
   };
 
+  // so long as it contains empty string, then
+  // not all options are selected
   const isAllSelected = !Object.values(selected).includes("");
 
   return (
-    <div className='filter-bar-box'>
-      <Filter 
-        optionName="Region" 
-        optionList={regionList} 
-        option={selected.region}
-        onChange={(value) => handleSelectChange("region", value)}
-      />
-      <Filter 
-        optionName="Price Range" optionList={priceRangeList}
-        option={selected.priceRange}
-        onChange={(value) => handleSelectChange("priceRange", value)}
-      />
-      <Filter 
-        optionName="Room Type" 
-        optionList={roomTypeList}
-        option={selected.roomType}
-        onChange={(value) => handleSelectChange("roomType", value)}
-      />
-      <Filter 
-        optionName="Lease Life" 
-        optionList={leaseLifeList}
-        option={selected.leaseLife}
-        onChange={(value) => handleSelectChange("leaseLife", value)}
-      />
+    <>
+      <div className='filter-bar-box'>
 
-      {isAllSelected && (
-        <button><Link to="/map">Search</Link></button>
-      )}
-    </div>
+        <Filter 
+          optionName="Region" 
+          optionList={regionList} 
+          option={selected.region}
+          onChange={(value) => handleSelectChange("region", value)}
+        />
+
+        <Filter 
+          optionName="Price Range" optionList={priceRangeList}
+          option={selected.priceRange}
+          onChange={(value) => handleSelectChange("priceRange", value)}
+        />
+
+        <Filter 
+          optionName="Room Type" 
+          optionList={roomTypeList}
+          option={selected.roomType}
+          onChange={(value) => handleSelectChange("roomType", value)}
+        />
+
+        <Filter 
+          optionName="Lease Life" 
+          optionList={leaseLifeList}
+          option={selected.leaseLife}
+          onChange={(value) => handleSelectChange("leaseLife", value)}
+        />
+
+      </div>
+
+      <div className='search-button-box'>
+          <button 
+            className={`button ${isAllSelected? 'active':'disabled'}`}
+            onClick={handleSearch}
+            disabled={!isAllSelected}
+        >
+            Find 
+          </button>
+      </div>
+
+    </>
   );
 }
 
