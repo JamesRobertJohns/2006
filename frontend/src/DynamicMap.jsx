@@ -16,6 +16,7 @@ import { useState, useEffect, useMemo } from "react";
 import TrafficCamera from "./classes/TrafficCamera.jsx";
 import Hdb from "./classes/Hdb.jsx";
 import Switch from "@mui/material/Switch";
+import Mrt from "./classes/mrt.jsx"
 
 const initialLongitude = 103.81895378099354;
 const initialLatitude = 1.356474868742945;
@@ -45,6 +46,28 @@ const fetchTrafficCameras = async (setTrafficCameras) => {
     console.error("Error fetching:", error);
   }
 };
+
+const fetchMrt = async (setMRT) => {
+  try {
+    const response = await fetch("./LTAMRTStationExitUpdated.json");
+    const data = await response.json();
+
+    if (data) {
+      const MRTs = data.features.map((item) => {
+        const name = item.properties?.Name || "Unknown";
+        const latitude = item.geometry?.coordinates[1] || 0;
+        const longitude = item.geometry?.coordinates[0] || 0;
+
+        return new Mrt(name, latitude, longitude);
+      });
+
+      setMRT(MRTs);
+    }
+  } catch (error) {
+    console.error("Error fetching MRT stations:", error);
+  }
+};
+
 
 const fetchHdbs = async (setHdbs) => {
   try {
@@ -85,15 +108,18 @@ const fetchHdbs = async (setHdbs) => {
 function DynamicMap() {
   const [trafficCameras, setTrafficCameras] = useState([]);
   const [hdbs, setHdbs] = useState([]);
+  const [MRTs, setMRTs] = useState([]);
 
   const [showHdb, setShowHdb] = useState(true);
   const [showTrafficCamera, setShowTrafficCamera] = useState(true);
+  const [showMRT, setShowMRT] = useState(true);
 
   const [popupInfo, setPopupInfo] = useState(null);
 
   useEffect(() => {
     fetchTrafficCameras(setTrafficCameras);
     fetchHdbs(setHdbs);
+    fetchMrt(setMRTs);
   }, []);
 
   {
@@ -155,6 +181,10 @@ function DynamicMap() {
           />
           <span>Display Traffic Camera</span>
         </div>
+        <div>
+        <Switch defaultChecked onChange={() => setShowMRT(!showMRT)} />
+        <span>Display MRT</span>
+        </div>
       </div>
       <Map
         maxBounds={[103.596, 1.1443, 104.1, 1.4835]}
@@ -195,6 +225,7 @@ function DynamicMap() {
         {showTrafficCamera &&
           trafficCameras.map((trafficCamera) => trafficCamera.getMapIcon())}
         {showHdb && hdbs.map((hdb) => hdb.getMapIcon(setPopupInfo))}
+        {showMRT && MRTs.map((MRT) => MRT.getMapIconMRT())}
       </Map>
     </div>
   );
