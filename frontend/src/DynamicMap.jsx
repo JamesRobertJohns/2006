@@ -171,7 +171,6 @@ function DynamicMap() {
 
         <GeolocateControl
           position="top-left"
-          trackUserLocation={false}
           showAccuracyCircle={false}
         />
         <FullscreenControl position="top-left" />
