@@ -8,7 +8,7 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     borderRadius: "50%",
-    border: "2.5px solid" + primaryColor,
+    border: "2.5px solid " + primaryColor,
     backgroundColor: "white",
     padding: 4,
   },
@@ -70,14 +70,17 @@ class Hdb {
     return this.longitude;
   }
 
-  getMapIcon(setPopupInfo) {
+  // Update the marker to use setSelectedHdb callback when clicked
+  getMapIcon(setSelectedHdb) {
     return (
       <Marker
         latitude={this.latitude}
         longitude={this.longitude}
+        key={`marker-${this.address}`}
+        anchor="bottom"
         onClick={(e) => {
           e.originalEvent.stopPropagation();
-          setPopupInfo(this);
+          setSelectedHdb(this);
         }}
       >
         <div style={styles.iconContainer}>
