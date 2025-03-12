@@ -17,6 +17,7 @@ import TrafficCamera from "./classes/TrafficCamera.jsx";
 import Hdb from "./classes/Hdb.jsx";
 import Switch from "@mui/material/Switch";
 import Mrt from "./classes/mrt.jsx"
+import School from "./classes/School.jsx";
 
 const initialLongitude = 103.81895378099354;
 const initialLatitude = 1.356474868742945;
@@ -68,6 +69,26 @@ const fetchMrt = async (setMRT) => {
   }
 };
 
+const fetchSchool = async(setSchool) => {
+  try {
+    const response = await fetch("./schools.json");
+    const data = await response.json();
+    
+    if (data) {
+      const Schools = data.map((item)=>{
+        return new School(
+          item.school_name,
+          item.latitude,
+          item.longitude
+        );
+      });
+      setSchool(Schools);
+    }
+
+  } catch(error) {
+    console.error("Error fetching schools: ", error);
+  }
+}
 
 const fetchHdbs = async (setHdbs) => {
   try {
@@ -109,10 +130,12 @@ function DynamicMap() {
   const [trafficCameras, setTrafficCameras] = useState([]);
   const [hdbs, setHdbs] = useState([]);
   const [MRTs, setMRTs] = useState([]);
+  const [Schools, setSchools] = useState([]);
 
   const [showHdb, setShowHdb] = useState(true);
   const [showTrafficCamera, setShowTrafficCamera] = useState(true);
   const [showMRT, setShowMRT] = useState(true);
+  const [showSchool, setShowSchool] = useState(true);
 
   const [popupInfo, setPopupInfo] = useState(null);
 
@@ -120,6 +143,7 @@ function DynamicMap() {
     fetchTrafficCameras(setTrafficCameras);
     fetchHdbs(setHdbs);
     fetchMrt(setMRTs);
+    fetchSchool(setSchools);
   }, []);
 
   {
@@ -185,6 +209,10 @@ function DynamicMap() {
         <Switch defaultChecked onChange={() => setShowMRT(!showMRT)} />
         <span>Display MRT</span>
         </div>
+        <div>
+          <Switch defaultChecked onChange={()=> setShowSchool(!showSchool)}/>
+          <span>Display School</span>
+        </div>
       </div>
       <Map
         maxBounds={[103.596, 1.1443, 104.1, 1.4835]}
@@ -226,6 +254,7 @@ function DynamicMap() {
           trafficCameras.map((trafficCamera) => trafficCamera.getMapIcon())}
         {showHdb && hdbs.map((hdb) => hdb.getMapIcon(setPopupInfo))}
         {showMRT && MRTs.map((MRT) => MRT.getMapIconMRT())}
+        {showSchool && Schools.map((School) => School.getSchoolMapIcon())}
       </Map>
     </div>
   );
