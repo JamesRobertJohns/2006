@@ -54,11 +54,11 @@ const fetchMrt = async (setMRT) => {
 
     if (data) {
       const MRTs = data.features.map((item) => {
-        const name = item.properties?.Name || "Unknown";
-        const latitude = item.geometry?.coordinates[1] || 0;
-        const longitude = item.geometry?.coordinates[0] || 0;
-
-        return new Mrt(name, latitude, longitude);
+        return new Mrt(
+          item.properties.Name,
+          item.geometry.coordinates[1],
+          item.geometry.coordinates[0]
+        );
       });
 
       setMRT(MRTs);
