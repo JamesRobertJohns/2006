@@ -1,3 +1,22 @@
+import { Marker } from "react-map-gl/maplibre";
+import { FaHome } from "react-icons/fa";
+const primaryColor = "#2D4059";
+
+const styles = {
+  iconContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: "50%",
+    border: "2.5px solid" + primaryColor,
+    backgroundColor: "white",
+    padding: 4,
+  },
+  icon: {
+    color: primaryColor,
+  },
+};
+
 class Hdb {
   constructor(
     month,
@@ -31,7 +50,6 @@ class Hdb {
     this.longitude = longitude;
   }
 
- 
   getFlatType() {
     return this.flat_type;
   }
@@ -50,6 +68,23 @@ class Hdb {
 
   getLongitude() {
     return this.longitude;
+  }
+
+  getMapIcon(setPopupInfo) {
+    return (
+      <Marker
+        latitude={this.latitude}
+        longitude={this.longitude}
+        onClick={(e) => {
+          e.originalEvent.stopPropagation();
+          setPopupInfo(this);
+        }}
+      >
+        <div style={styles.iconContainer}>
+          <FaHome size={30} style={styles.icon} />
+        </div>
+      </Marker>
+    );
   }
 }
 

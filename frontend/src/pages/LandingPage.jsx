@@ -1,12 +1,13 @@
-import FilterBar from "../FilterBar.jsx"
-import RegionalMap from "../RegionalMap.jsx";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import FilterBar from "../FilterBar.jsx";
+import Header from "../Header.jsx";
 function LandingPage() {
   return (
-    <div>
+    <>
+      <Header />
       <FilterBar /> 
-      <RegionalMap />
-      </div>
+    </>
   );
 };
 
-export  default LandingPage;
+export default LandingPage;

@@ -1,3 +1,23 @@
+import { Marker } from "react-map-gl/maplibre";
+import { PiSecurityCameraBold } from "react-icons/pi";
+
+const primaryColor = "#F07B3F";
+
+const styles = {
+  iconContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: "50%",
+    border: "2.4px solid" + primaryColor,
+    backgroundColor: "white",
+    padding: 3,
+  },
+  icon: {
+    color: primaryColor,
+  },
+};
+
 class TrafficCamera {
   constructor(id, url, latitude, longitude, timestamp) {
     this.id = id;
@@ -17,6 +37,16 @@ class TrafficCamera {
 
   getLongitude() {
     return this.longitude;
+  }
+
+  getMapIcon() {
+    return (
+      <Marker key={this.id} latitude={this.latitude} longitude={this.longitude}>
+        <div style={styles.iconContainer}>
+          <PiSecurityCameraBold size={22} style={styles.icon} />
+        </div>
+      </Marker>
+    );
   }
 }
 

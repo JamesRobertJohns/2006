@@ -1,8 +1,8 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 
-import  { 
-  Map, 
-  Marker, 
+import {
+  Map,
+  Marker,
   Popup,
   NavigationControl,
   FullscreenControl,
@@ -15,6 +15,7 @@ import HousePin from "./HousePin.jsx";
 import { useState, useEffect, useMemo } from "react";
 import TrafficCamera from "./classes/TrafficCamera.jsx";
 import Hdb from "./classes/Hdb.jsx";
+import Switch from "@mui/material/Switch";
 
 const initialLongitude = 103.81895378099354;
 const initialLatitude = 1.356474868742945;
@@ -55,7 +56,7 @@ const fetchHdbs = async (setHdbs) => {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffledData[i], shuffledData[j]] = [shuffledData[j], shuffledData[i]];
       }
-      const smallData = shuffledData.slice(0, 250);
+      const smallData = shuffledData.slice(0, 75);
       const hdbs = smallData.map((item) => {
         return new Hdb(
           item.month,
@@ -82,9 +83,11 @@ const fetchHdbs = async (setHdbs) => {
 };
 
 function DynamicMap() {
-
   const [trafficCameras, setTrafficCameras] = useState([]);
   const [hdbs, setHdbs] = useState([]);
+
+  const [showHdb, setShowHdb] = useState(true);
+  const [showTrafficCamera, setShowTrafficCamera] = useState(true);
 
   const [popupInfo, setPopupInfo] = useState(null);
 
@@ -93,8 +96,8 @@ function DynamicMap() {
     fetchHdbs(setHdbs);
   }, []);
 
-
-     {/*
+  {
+    /*
         
         there's dupliates in addres need to check the reason why 
 
@@ -102,23 +105,24 @@ function DynamicMap() {
 
         otherwise will have warnings and may have future bugs
 
-        */}
+        */
+  }
 
   const hdbpins = useMemo(
-    ()=> 
+    () =>
       hdbs.map((hdb) => (
         <Marker
           latitude={hdb.latitude}
           longitude={hdb.longitude}
-          key={`marker-${hdb.address}`} 
+          key={`marker-${hdb.address}`}
           anchor="bottom"
-          onClick={e => {
+          onClick={(e) => {
             e.originalEvent.stopPropagation(); // this prevents propogation to Map
             setPopupInfo(hdb);
           }}
         >
           <HousePin />
-        </Marker> 
+        </Marker>
       )),
     [hdbs] // dependencies, rn it is just hdbs, but can put filtered-hdb or sth to reflect changes
   );
@@ -130,6 +134,29 @@ function DynamicMap() {
         height: "100vh",
       }}
     >
+      <div
+        style={{
+          position: "absolute",
+          zIndex: 1,
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          background: "white",
+        }}
+      >
+        <div>
+          <Switch defaultChecked onChange={() => setShowHdb(!showHdb)} />
+          <span>Display HDB</span>
+        </div>
+        <div>
+          <Switch
+            defaultChecked
+            onChange={() => setShowTrafficCamera(!showTrafficCamera)}
+          />
+          <span>Display Traffic Camera</span>
+        </div>
+      </div>
+
       <Map
         maxBounds={[103.596, 1.1443, 104.1, 1.4835]}
         mapStyle="https://www.onemap.gov.sg/maps/json/raster/mbstyle/Default.json"
@@ -140,37 +167,18 @@ function DynamicMap() {
           zoom: initialZoom,
         }}
       >
-
-
         {/* imma place nav controls here */}
 
-        <GeolocateControl 
-          position="top-left" 
-          trackUserLocation="false"
-          showAccuracyCircle="false"
+        <GeolocateControl
+          position="top-left"
+          showAccuracyCircle={false}
         />
         <FullscreenControl position="top-left" />
         <NavigationControl position="top-left" />
         <ScaleControl />
 
+        {/* {hdbpins} */}
 
-        {/*
-        {trafficCameras.map((trafficCamera) => (
-          <Marker
-            key={trafficCamera.id}
-            latitude={trafficCamera.latitude}
-            longitude={trafficCamera.longitude}
-          >
-            <img
-              src={trafficCamera.url}
-              style={{ width: 60, height: "auto" }}
-            />
-          </Marker>
-        ))}
-        */}
-              
-        {hdbpins}
-        
         {popupInfo && (
           <Popup
             anchor="top"
@@ -184,6 +192,9 @@ function DynamicMap() {
           </Popup>
         )}
 
+        {showTrafficCamera &&
+          trafficCameras.map((trafficCamera) => trafficCamera.getMapIcon())}
+        {showHdb && hdbs.map((hdb) => hdb.getMapIcon(setPopupInfo))}
       </Map>
     </div>
   );

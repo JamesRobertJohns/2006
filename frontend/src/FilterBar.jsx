@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import Filter from "./Filter/Filter.jsx";
+import { useNavigate } from "react-router-dom";
 
 function FilterBar() {
+  const navigate = useNavigate();
+  const handleSearch = () => {
+    navigate('\map');
+  };
 
   const regionList = [
     "Central", 
@@ -41,13 +46,72 @@ function FilterBar() {
     "90 - 99 yr",
   ];
 
+  // the filters are set to display default OptionName
+  // if the values are set to NULL
+  const [selected, setSelected] = useState({
+    region: "",
+    priceRange: "",
+    roomType: "",
+    leaseLife: "",
+  });
+
+ 
+  // updates the key value pair
+  const handleSelectChange = (filter, option) => {
+    setSelected((s) => ({
+      ...s,
+      [filter]: option,
+    }));
+  };
+
+  // so long as it contains empty string, then
+  // not all options are selected
+  const isAllSelected = !Object.values(selected).includes("");
+
   return (
+    <>
       <div className='filter-bar-box'>
-        <Filter optionName="Region" optionList={regionList} />
-        <Filter optionName="Price Range" optionList={priceRangeList}/>
-        <Filter optionName="Room Type" optionList={roomTypeList} />
-        <Filter optionName="Lease Life" optionList={leaseLifeList} />
+
+        <Filter 
+          optionName="Region" 
+          optionList={regionList} 
+          option={selected.region}
+          onChange={(value) => handleSelectChange("region", value)}
+        />
+
+        <Filter 
+          optionName="Price Range" optionList={priceRangeList}
+          option={selected.priceRange}
+          onChange={(value) => handleSelectChange("priceRange", value)}
+        />
+
+        <Filter 
+          optionName="Room Type" 
+          optionList={roomTypeList}
+          option={selected.roomType}
+          onChange={(value) => handleSelectChange("roomType", value)}
+        />
+
+        <Filter 
+          optionName="Lease Life" 
+          optionList={leaseLifeList}
+          option={selected.leaseLife}
+          onChange={(value) => handleSelectChange("leaseLife", value)}
+        />
+
       </div>
+
+      <div className='search-button-box'>
+          <button 
+            className={`button ${isAllSelected? 'active':'disabled'}`}
+            onClick={handleSearch}
+            disabled={!isAllSelected}
+        >
+            Find 
+          </button>
+      </div>
+
+    </>
   );
 }
 
