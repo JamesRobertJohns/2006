@@ -10,11 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@svgr/webpack": "^8.1.0",
     "frontend": "file:",
     "maplibre-gl": "^4.7.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-map-gl": "^7.1.9"
+    "react-map-gl": "^7.1.9",
+    "react-router-dom": "^7.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
