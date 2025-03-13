@@ -16,7 +16,7 @@ function Sidebar({ isOpen, onClose, selectedHdb }) {
     <div className={`sidebar ${isOpen ? "open" : ""}`}>
       <div className="sidebar-header">
         {/* Consider making this dynamic if you have images for each property */}
-        <img src="block426.jpeg" alt="Property" />
+        {/*<img src="block426.jpeg" alt="Property" />*/}
         <button className="close-btn" onClick={onClose}>
           ✕
         </button>
@@ -24,7 +24,7 @@ function Sidebar({ isOpen, onClose, selectedHdb }) {
 
       <div className="sidebar-content">
         <h2 className="rent-price">S${formatPrice(selectedHdb.resale_price)}</h2>
-        <h3 className="property-name">{selectedHdb.address}</h3>
+        <h5 className="property-name">{selectedHdb.address}</h5>
         <p className="sub-info">Lease remaining: {selectedHdb.remaining_lease}</p>
 
         <div className="property-details">

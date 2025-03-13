@@ -1,8 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Filter from "./Filter/Filter.jsx";
 import { useNavigate } from "react-router-dom";
+import Hdb from "./classes/Hdb.jsx";
+import TownToRegionMap from "./TownToRegion.json";
 
 function FilterBar() {
+
+  const [allHdbs, setAllHdbs] = useState([]); 
+  const [filteredHdbs, setFilteredHdbs] = useState([]); 
+
+
+  useEffect(() => {
+    const fetchHdbs = async () => {
+      try {
+        const response = await fetch("./hdb.json");
+        const data = await response.json();
+        const hdbs = data.map((item) => {
+          return new Hdb(
+            item.month,
+            item.town,
+            item.flat_type,
+            item.block,
+            item.street_name,
+            item.storey_range,
+            item.floor_area_sqm,
+            item.flat_model,
+            item.lease_commence_date,
+            item.remaining_lease,
+            item.resale_price,
+            item.address,
+            item.latitude,
+            item.longitude
+          );
+        });
+        setAllHdbs(hdbs); 
+        setFilteredHdbs(hdbs); 
+      } catch (error) {
+        console.error("Error fetching:", error);
+      }
+    };
+    fetchHdbs();
+  }, []);
+
   const navigate = useNavigate();
   const handleSearch = () => {
     navigate('\map');
@@ -55,7 +94,7 @@ function FilterBar() {
     leaseLife: "",
   });
 
- 
+
   // updates the key value pair
   const handleSelectChange = (filter, option) => {
     setSelected((s) => ({
@@ -67,6 +106,19 @@ function FilterBar() {
   // so long as it contains empty string, then
   // not all options are selected
   const isAllSelected = !Object.values(selected).includes("");
+
+  // hdb.town should be in uppercase, see json
+  useMemo(() => {
+    let filtered = allHdbs;
+
+    if (selected.region) {
+      filtered = filtered.filter((hdb) => {
+        const region = TownToRegionMap[hdb.town] || "";
+        return region === selected.region;
+      });
+    }
+    setFilteredHdbs(filtered);
+  }, [selected, allHdbs]);
 
   return (
     <>
@@ -101,15 +153,21 @@ function FilterBar() {
 
       </div>
 
-      <div className='search-button-box'>
-          <button 
-            className={`button ${isAllSelected? 'active':'disabled'}`}
-            onClick={handleSearch}
-            disabled={!isAllSelected}
-        >
-            Find 
-          </button>
+      <div className='house-count'>
+        <h1>{filteredHdbs.length.toLocaleString()}</h1>
+        <p>Flats Available</p>
       </div>
+
+      <div className='search-button-box'>
+        <button 
+          className={`button ${isAllSelected? 'active':'disabled'}`}
+          onClick={handleSearch}
+          disabled={!isAllSelected}
+        >
+          Find 
+        </button>
+      </div>
+
 
     </>
   );
