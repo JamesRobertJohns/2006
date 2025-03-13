@@ -56,10 +56,10 @@ function FilterBar() {
   ];
 
   const roomTypeList = [
-    "Two-Room", 
-    "Three-Room", 
-    "Four-Room", 
-    "Five-Room", 
+    "2 Room", 
+    "3 Room", 
+    "4 Room", 
+    "5 Room", 
     "Executive"
   ];
 
@@ -138,7 +138,7 @@ function FilterBar() {
         />
 
         <Filter 
-          optionName="Room Type" 
+          optionName="Flat Type" 
           optionList={roomTypeList}
           option={selected.roomType}
           onChange={(value) => handleSelectChange("roomType", value)}
