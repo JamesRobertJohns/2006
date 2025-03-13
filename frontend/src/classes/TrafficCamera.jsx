@@ -1,5 +1,4 @@
 import "./Sidebar.css";
-import { FaOrcid } from "react-icons/fa";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { IoTimerSharp } from "react-icons/io5";
 import { Marker } from "react-map-gl/maplibre";

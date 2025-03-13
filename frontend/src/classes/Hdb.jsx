@@ -77,7 +77,6 @@ class Hdb {
     return this.longitude;
   }
 
-  // Update the marker to use setSelectedHdb callback when clicked
   getMapIcon({ pushCache }) {
     return (
       <Marker

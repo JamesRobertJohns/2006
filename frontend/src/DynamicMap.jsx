@@ -10,7 +10,6 @@ import { useState, useEffect, useMemo } from "react";
 
 import TrafficCamera from "./classes/TrafficCamera.jsx";
 import Hdb from "./classes/Hdb.jsx";
-import Sidebar from "./Sidebar.jsx";
 import Switch from "@mui/material/Switch";
 
 const initialLongitude = 103.81895378099354;
@@ -85,13 +84,12 @@ function DynamicMap() {
   const [showHdb, setShowHdb] = useState(true);
   const [showTrafficCamera, setShowTrafficCamera] = useState(true);
 
-  // State for the selected Map Element (for sidebar)
-  const [selectedMapElement, setSelectedMapElement] = useState(null);
-  const [cache, setCache] = useState([]);
+  const [cache, setCache] = useState([]); // cache state for side panel
 
   const pushCache = (element) => {
     setCache((prevCache) => [...prevCache, element]);
   };
+
   const popCache = () => {
     setCache((prevCache) => prevCache.slice(0, -1));
   };
@@ -105,24 +103,6 @@ function DynamicMap() {
     fetchHdbs(setHdbs);
   }, []);
 
-  useEffect(() => {
-    console.log("selectedMapElement updated:", selectedMapElement);
-  }, [selectedMapElement, setSelectedMapElement]);
-
-  console.log("selectedMapElement outside:", selectedMapElement);
-  // console.log(selectedMapElement); // Should log the selected HDB object when a marker is clicked
-
-  {
-    /*
-        
-        there's dupliates in addres need to check the reason why 
-
-        using var.map(), key needs to be supplied and supposed to be unique
-
-        otherwise will have warnings and may have future bugs
-
-        */
-  }
   // Prepare HDB markers using our updated getMapIcon method
   const hdbpins = useMemo(
     () => hdbs.map((hdb) => hdb.getMapIcon({ pushCache })),
@@ -131,14 +111,10 @@ function DynamicMap() {
 
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
-      {/* Sidebar Integration */}
+      {/* Side Panel */}
       {cache.length > 0 &&
         cache[cache.length - 1].getSidePanel({ clearCache, popCache })}
-      {/* <Sidebar
-        isOpen={Boolean(selectedMapElement)}
-        onClose={() => setSelectedMapElement(null)}
-        selectedHdb={selectedMapElement}
-      /> */}
+
       {/* Toggle Buttons */}
       <div
         style={{
