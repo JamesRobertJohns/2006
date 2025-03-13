@@ -85,28 +85,48 @@ function DynamicMap() {
   const [showHdb, setShowHdb] = useState(true);
   const [showTrafficCamera, setShowTrafficCamera] = useState(true);
 
-  // State for the selected HDB (for sidebar)
-  const [selectedHdb, setSelectedHdb] = useState(null);
+  // State for the selected Map Element (for sidebar)
+  const [selectedMapElement, setSelectedMapElement] = useState(null);
 
   useEffect(() => {
     fetchTrafficCameras(setTrafficCameras);
     fetchHdbs(setHdbs);
   }, []);
 
+  useEffect(() => {
+    console.log("selectedMapElement updated:", selectedMapElement);
+  }, [selectedMapElement, setSelectedMapElement]);
+
+  console.log("selectedMapElement outside:", selectedMapElement);
+  // console.log(selectedMapElement); // Should log the selected HDB object when a marker is clicked
+
+  {
+    /*
+        
+        there's dupliates in addres need to check the reason why 
+
+        using var.map(), key needs to be supplied and supposed to be unique
+
+        otherwise will have warnings and may have future bugs
+
+        */
+  }
   // Prepare HDB markers using our updated getMapIcon method
   const hdbpins = useMemo(
-    () => hdbs.map((hdb) => hdb.getMapIcon(setSelectedHdb)),
+    () => hdbs.map((hdb) => hdb.getMapIcon({ setSelectedMapElement })),
     [hdbs]
   );
 
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
       {/* Sidebar Integration */}
-      <Sidebar
-        isOpen={Boolean(selectedHdb)}
-        onClose={() => setSelectedHdb(null)}
-        selectedHdb={selectedHdb}
-      />
+      {selectedMapElement &&
+        selectedMapElement.getSidePanel({ setSelectedMapElement })}
+      {/* <Sidebar
+        isOpen={Boolean(selectedMapElement)}
+        onClose={() => setSelectedMapElement(null)}
+        selectedHdb={selectedMapElement}
+      /> */}
       {/* Toggle Buttons */}
       <div
         style={{
@@ -140,9 +160,9 @@ function DynamicMap() {
           zoom: initialZoom,
         }}
       >
-        <GeolocateControl 
-          position="bottom-right" 
-          showAccuracyCircle={false}  
+        <GeolocateControl
+          position="bottom-right"
+          showAccuracyCircle={false}
           trackUserLocation={false}
         />
         <FullscreenControl position="bottom-right" />
@@ -151,7 +171,7 @@ function DynamicMap() {
 
         {showTrafficCamera &&
           trafficCameras.map((trafficCamera) =>
-            trafficCamera.getMapIcon()
+            trafficCamera.getMapIcon({ setSelectedMapElement })
           )}
         {showHdb && hdbpins}
       </Map>

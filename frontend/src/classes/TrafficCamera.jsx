@@ -1,3 +1,6 @@
+import "./Sidebar.css";
+import { FaOrcid } from "react-icons/fa";
+import { IoTimerSharp } from "react-icons/io5";
 import { Marker } from "react-map-gl/maplibre";
 import { PiSecurityCameraBold } from "react-icons/pi";
 
@@ -39,13 +42,77 @@ class TrafficCamera {
     return this.longitude;
   }
 
-  getMapIcon() {
+  getMapIcon({ setSelectedMapElement }) {
     return (
-      <Marker key={this.id} latitude={this.latitude} longitude={this.longitude}>
+      <Marker
+        key={this.id}
+        latitude={this.latitude}
+        longitude={this.longitude}
+        onClick={() => {
+          setSelectedMapElement(this);
+        }}
+      >
         <div style={styles.iconContainer}>
-          <PiSecurityCameraBold cursor="pointer" size={22} style={styles.icon} />
+          <PiSecurityCameraBold
+            cursor="pointer"
+            size={22}
+            style={styles.icon}
+          />
         </div>
       </Marker>
+    );
+  }
+
+  getSidePanel({ setSelectedMapElement }) {
+    const formatTimestamp = (timestamp) => {
+      const date = new Date(timestamp);
+
+      // Extract day, month, and year with padding
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = String(date.getFullYear()).slice(-2);
+
+      // Extract hours, minutes, seconds, and AM/PM
+      const hours = String(date.getHours() % 12 || 12).padStart(2, "0"); // 12-hour format
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const seconds = String(date.getSeconds()).padStart(2, "0");
+      const ampm = date.getHours() >= 12 ? "PM" : "AM";
+
+      // Format it as dd/MM/yy hh:mm:ss AM/PM
+      return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+    };
+
+    return (
+      <div className={`sidebar ${"open"}`}>
+        <div className="sidebar-header">
+          <button
+            className="close-btn"
+            onClick={() => {
+              setSelectedMapElement(null);
+            }}
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="sidebar-content">
+          <div>
+            <img
+              src={this.getUrl()}
+              alt="Property"
+              style={{
+                width: "100%", // Makes the image stretch to fill the width of the container
+                height: "auto", // Maintains the image's aspect ratio
+                objectFit: "cover", // Ensures the image fills the container without distorting
+              }}
+            />
+          </div>
+          <h5 className="property-name">Traffic Camera ID: {this.id}</h5>
+          <p className="sub-info">
+            <IoTimerSharp /> {formatTimestamp(this.timestamp)}
+          </p>
+        </div>
+      </div>
     );
   }
 }
