@@ -107,18 +107,39 @@ function FilterBar() {
   // not all options are selected
   const isAllSelected = !Object.values(selected).includes("");
 
-  // hdb.town should be in uppercase, see json
+
+  /**
+   * filter logic using memoization
+   *
+   * hdb.town should be in uppercase, see json
+   * im not sure if i captured all the towns 
+   * in any case uncaptured towns will be empty
+   *
+   * dependency list only have selected options array
+   * our hdb json is static
+   *
+   * similarly, flatType from json are all upper case
+  */
   useMemo(() => {
     let filtered = allHdbs;
-
+    
     if (selected.region) {
       filtered = filtered.filter((hdb) => {
         const region = TownToRegionMap[hdb.town] || "";
         return region === selected.region;
       });
     }
+
+    if (selected.roomType) {
+      filtered = filtered.filter((hdb) => {
+        const roomType = hdb.getFlatType();
+        return roomType === selected.roomType.toUpperCase();
+      });
+
+    }
+
     setFilteredHdbs(filtered);
-  }, [selected, allHdbs]);
+  }, [selected]);
 
   return (
     <>
