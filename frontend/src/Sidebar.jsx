@@ -8,6 +8,10 @@ import { BsHouse } from "react-icons/bs";
 function Sidebar({ isOpen, onClose, selectedHdb }) {
   if (!selectedHdb) return null;
 
+  const formatPrice = (price) => {
+   return Number(price).toLocaleString(); 
+  }
+
   return (
     <div className={`sidebar ${isOpen ? "open" : ""}`}>
       <div className="sidebar-header">
@@ -19,7 +23,7 @@ function Sidebar({ isOpen, onClose, selectedHdb }) {
       </div>
 
       <div className="sidebar-content">
-        <h2 className="rent-price">${selectedHdb.resale_price} <span>/month</span></h2>
+        <h2 className="rent-price">S${formatPrice(selectedHdb.resale_price)}</h2>
         <h3 className="property-name">{selectedHdb.address}</h3>
         <p className="sub-info">Lease remaining: {selectedHdb.remaining_lease}</p>
 

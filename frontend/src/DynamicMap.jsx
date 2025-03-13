@@ -140,7 +140,11 @@ function DynamicMap() {
           zoom: initialZoom,
         }}
       >
-        <GeolocateControl position="bottom-right" showAccuracyCircle={false}  />
+        <GeolocateControl 
+          position="bottom-right" 
+          showAccuracyCircle={false}  
+          trackUserLocation={false}
+        />
         <FullscreenControl position="bottom-right" />
         <NavigationControl position="bottom-right" />
         <ScaleControl />

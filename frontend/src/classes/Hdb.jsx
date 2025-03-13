@@ -77,14 +77,14 @@ class Hdb {
         latitude={this.latitude}
         longitude={this.longitude}
         key={`marker-${this.address}`}
-        anchor="bottom"
+        cursor="pointer"
         onClick={(e) => {
           e.originalEvent.stopPropagation();
           setSelectedHdb(this);
         }}
       >
         <div style={styles.iconContainer}>
-          <FaHome size={30} style={styles.icon} />
+          <FaHome size={30} cursor="pointer" style={styles.icon} />
         </div>
       </Marker>
     );

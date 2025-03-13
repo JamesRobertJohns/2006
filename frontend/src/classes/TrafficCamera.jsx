@@ -43,7 +43,7 @@ class TrafficCamera {
     return (
       <Marker key={this.id} latitude={this.latitude} longitude={this.longitude}>
         <div style={styles.iconContainer}>
-          <PiSecurityCameraBold size={22} style={styles.icon} />
+          <PiSecurityCameraBold cursor="pointer" size={22} style={styles.icon} />
         </div>
       </Marker>
     );
