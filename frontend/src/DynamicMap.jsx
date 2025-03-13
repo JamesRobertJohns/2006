@@ -140,9 +140,9 @@ function DynamicMap() {
           zoom: initialZoom,
         }}
       >
-        <GeolocateControl position="top-left" showAccuracyCircle={false} />
-        <FullscreenControl position="top-left" />
-        <NavigationControl position="top-left" />
+        <GeolocateControl position="bottom-right" showAccuracyCircle={false}  />
+        <FullscreenControl position="bottom-right" />
+        <NavigationControl position="bottom-right" />
         <ScaleControl />
 
         {showTrafficCamera &&
