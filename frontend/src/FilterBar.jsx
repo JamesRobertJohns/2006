@@ -75,12 +75,10 @@ function FilterBar() {
   ];
 
   const leaseLifeList = [
-    "20 - 29 yr",
-    "29 - 39 yr", 
-    "41 - 49 yr",
-    "51 - 59 yr",
-    "61 - 69 yr",
-    "71 - 79 yr",
+    "40 - 49 yr",
+    "50 - 59 yr",
+    "60 - 69 yr",
+    "70 - 79 yr",
     "80 - 89 yr",
     "90 - 99 yr",
   ];
@@ -119,23 +117,44 @@ function FilterBar() {
    * our hdb json is static
    *
    * similarly, flatType from json are all upper case
+   *
+   * filtering of lease life will only use the years
+   * i.e. round down to year, discard months
   */
   useMemo(() => {
     let filtered = allHdbs;
-    
+
     if (selected.region) {
-      filtered = filtered.filter((hdb) => {
-        const region = TownToRegionMap[hdb.town] || "";
-        return region === selected.region;
-      });
+      filtered = filtered.filter(
+        (hdb) => {
+          const region = TownToRegionMap[hdb.town] || "";
+          return region === selected.region;
+        }
+      );
     }
 
     if (selected.roomType) {
-      filtered = filtered.filter((hdb) => {
-        const roomType = hdb.getFlatType();
-        return roomType === selected.roomType.toUpperCase();
-      });
+      filtered = filtered.filter(
+        (hdb) => {
+          const roomType = hdb.getFlatType();
+          return roomType === selected.roomType.toUpperCase();
+        }
+      );
+    }
 
+    /**
+     * e.g.
+     * 40 - 49 yr
+     */
+    if (selected.leaseLife) {
+      let lowerbound = Number(selected.leaseLife.split(" ")[0]);
+      let upperbound = Number(selected.leaseLife.split(" ")[2]);
+      filtered = filtered.filter(
+        (hdb) => {
+          const leaseLife = Number(hdb.getLeaseLife().split(" ")[0]);             
+          return leaseLife >= lowerbound && leaseLife <= upperbound;
+        }
+      );
     }
 
     setFilteredHdbs(filtered);
