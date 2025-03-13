@@ -64,23 +64,25 @@ function FilterBar() {
   ];
 
   const priceRangeList = [
-    "S$200,000 - 299,999", 
-    "S$300,000 - 399,999",
-    "S$400,000 - 499,999", 
-    "S$500,000 - 599,999", 
-    "S$600,000 - 699,999", 
-    "S$700,000 - 799,999", 
-    "S$800,000 - 899,999",
-    "S$900,000 - 999,999",
+    "199,999 and below",
+    "200,000 - 299,999", 
+    "300,000 - 399,999",
+    "400,000 - 499,999", 
+    "500,000 - 599,999", 
+    "600,000 - 699,999", 
+    "700,000 - 799,999", 
+    "800,000 - 899,999",
+    "900,000 - 999,999",
+    "1,000,000 and above",
   ];
 
   const leaseLifeList = [
-    "40 - 49 yr",
-    "50 - 59 yr",
-    "60 - 69 yr",
-    "70 - 79 yr",
-    "80 - 89 yr",
-    "90 - 99 yr",
+    "40 - 49",
+    "50 - 59",
+    "60 - 69",
+    "70 - 79",
+    "80 - 89",
+    "90 - 99",
   ];
 
   // the filters are set to display default OptionName
@@ -144,7 +146,7 @@ function FilterBar() {
 
     /**
      * e.g.
-     * 40 - 49 yr
+     * 40 - 49
      */
     if (selected.leaseLife) {
       let lowerbound = Number(selected.leaseLife.split(" ")[0]);
@@ -155,6 +157,48 @@ function FilterBar() {
           return leaseLife >= lowerbound && leaseLife <= upperbound;
         }
       );
+    }
+
+   /**
+    * e.g.
+    * 200,000 - 210,000
+    * two extreme options
+    * 199,999 and below
+    * 1,000,000 and above
+    * there shouldnt be many people requiring them
+    * troublesome to separate until so granular
+    *
+    * note that in json reslae price is in XXXX.0
+    *
+    */
+
+    if (selected.priceRange) {
+      let lowerbound = Number(selected.priceRange.split(" ")[0].replace(/,/g, ""));
+      let upperbound = selected.priceRange.split(" ")[2];
+      if (upperbound === "below") {
+        filtered = filtered.filter(
+          (hdb) => {
+           return Number(hdb.getPrice()) <= lowerbound; 
+          }
+        );
+      }
+      else if (upperbound === "above") {
+        filtered = filtered.filter(
+          (hdb) => {
+             return Number(hdb.getPrice()) >= lowerbound; 
+          }
+        );
+      }
+      else {
+        upperbound = Number(upperbound.replace(/,/g, ""));
+        filtered = filtered.filter(
+          (hdb) => {
+            const price = Number(hdb.getPrice());             
+            return price >= lowerbound && price <= upperbound; 
+          }
+        );
+
+      }
     }
 
     setFilteredHdbs(filtered);
@@ -172,7 +216,7 @@ function FilterBar() {
         />
 
         <Filter 
-          optionName="Price Range" optionList={priceRangeList}
+          optionName="Price Range (S$)" optionList={priceRangeList}
           option={selected.priceRange}
           onChange={(value) => handleSelectChange("priceRange", value)}
         />
@@ -185,7 +229,7 @@ function FilterBar() {
         />
 
         <Filter 
-          optionName="Lease Life" 
+          optionName="Lease Life (Yr)" 
           optionList={leaseLifeList}
           option={selected.leaseLife}
           onChange={(value) => handleSelectChange("leaseLife", value)}
