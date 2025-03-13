@@ -1,5 +1,6 @@
 import "./Sidebar.css";
 import { FaOrcid } from "react-icons/fa";
+import { IoArrowBackSharp } from "react-icons/io5";
 import { IoTimerSharp } from "react-icons/io5";
 import { Marker } from "react-map-gl/maplibre";
 import { PiSecurityCameraBold } from "react-icons/pi";
@@ -42,14 +43,14 @@ class TrafficCamera {
     return this.longitude;
   }
 
-  getMapIcon({ setSelectedMapElement }) {
+  getMapIcon({ pushCache }) {
     return (
       <Marker
         key={this.id}
         latitude={this.latitude}
         longitude={this.longitude}
         onClick={() => {
-          setSelectedMapElement(this);
+          pushCache(this);
         }}
       >
         <div style={styles.iconContainer}>
@@ -63,7 +64,7 @@ class TrafficCamera {
     );
   }
 
-  getSidePanel({ setSelectedMapElement }) {
+  getSidePanel({ clearCache, popCache }) {
     const formatTimestamp = (timestamp) => {
       const date = new Date(timestamp);
 
@@ -88,7 +89,15 @@ class TrafficCamera {
           <button
             className="close-btn"
             onClick={() => {
-              setSelectedMapElement(null);
+              popCache();
+            }}
+          >
+            <IoArrowBackSharp />
+          </button>
+          <button
+            className="close-btn"
+            onClick={() => {
+              clearCache();
             }}
           >
             ✕

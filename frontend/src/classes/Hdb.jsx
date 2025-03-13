@@ -1,4 +1,5 @@
 import "./Sidebar.css";
+import { IoArrowBackSharp } from "react-icons/io5";
 import { FaMosquito } from "react-icons/fa6";
 import { FaTrainSubway } from "react-icons/fa6";
 import { FaBed } from "react-icons/fa";
@@ -77,7 +78,7 @@ class Hdb {
   }
 
   // Update the marker to use setSelectedHdb callback when clicked
-  getMapIcon({ setSelectedMapElement }) {
+  getMapIcon({ pushCache }) {
     return (
       <Marker
         latitude={this.latitude}
@@ -86,7 +87,7 @@ class Hdb {
         cursor="pointer"
         onClick={(e) => {
           e.originalEvent.stopPropagation();
-          setSelectedMapElement(this);
+          pushCache(this);
         }}
       >
         <div style={styles.iconContainer}>
@@ -96,7 +97,7 @@ class Hdb {
     );
   }
 
-  getSidePanel({ setSelectedMapElement }) {
+  getSidePanel({ clearCache, popCache }) {
     const formatPrice = (price) => {
       return Number(price).toLocaleString();
     };
@@ -109,7 +110,15 @@ class Hdb {
           <button
             className="close-btn"
             onClick={() => {
-              setSelectedMapElement(null);
+              popCache();
+            }}
+          >
+            <IoArrowBackSharp />
+          </button>
+          <button
+            className="close-btn"
+            onClick={() => {
+              clearCache();
             }}
           >
             ✕

@@ -87,6 +87,18 @@ function DynamicMap() {
 
   // State for the selected Map Element (for sidebar)
   const [selectedMapElement, setSelectedMapElement] = useState(null);
+  const [cache, setCache] = useState([]);
+
+  const pushCache = (element) => {
+    setCache((prevCache) => [...prevCache, element]);
+  };
+  const popCache = () => {
+    setCache((prevCache) => prevCache.slice(0, -1));
+  };
+
+  const clearCache = () => {
+    setCache([]);
+  };
 
   useEffect(() => {
     fetchTrafficCameras(setTrafficCameras);
@@ -113,15 +125,15 @@ function DynamicMap() {
   }
   // Prepare HDB markers using our updated getMapIcon method
   const hdbpins = useMemo(
-    () => hdbs.map((hdb) => hdb.getMapIcon({ setSelectedMapElement })),
+    () => hdbs.map((hdb) => hdb.getMapIcon({ pushCache })),
     [hdbs]
   );
 
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
       {/* Sidebar Integration */}
-      {selectedMapElement &&
-        selectedMapElement.getSidePanel({ setSelectedMapElement })}
+      {cache.length > 0 &&
+        cache[cache.length - 1].getSidePanel({ clearCache, popCache })}
       {/* <Sidebar
         isOpen={Boolean(selectedMapElement)}
         onClose={() => setSelectedMapElement(null)}
@@ -171,7 +183,7 @@ function DynamicMap() {
 
         {showTrafficCamera &&
           trafficCameras.map((trafficCamera) =>
-            trafficCamera.getMapIcon({ setSelectedMapElement })
+            trafficCamera.getMapIcon({ pushCache })
           )}
         {showHdb && hdbpins}
       </Map>
