@@ -1,22 +1,17 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-
 import {
   Map,
-  Marker,
-  Popup,
   NavigationControl,
   FullscreenControl,
   ScaleControl,
   GeolocateControl,
 } from "react-map-gl/maplibre";
-
-import HousePin from "./HousePin.jsx";
-
 import { useState, useEffect, useMemo } from "react";
+
 import TrafficCamera from "./classes/TrafficCamera.jsx";
 import Hdb from "./classes/Hdb.jsx";
 import Switch from "@mui/material/Switch";
-import Mrt from "./classes/mrt.jsx"
+import Mrt from "./classes/mrt.jsx";
 import School from "./classes/School.jsx";
 
 const initialLongitude = 103.81895378099354;
@@ -40,7 +35,6 @@ const fetchTrafficCameras = async (setTrafficCameras) => {
           item.timestamp
         );
       });
-
       setTrafficCameras(trafficCameras);
     }
   } catch (error) {
@@ -69,26 +63,21 @@ const fetchMrt = async (setMRT) => {
   }
 };
 
-const fetchSchool = async(setSchool) => {
+const fetchSchool = async (setSchool) => {
   try {
     const response = await fetch("./schools.json");
     const data = await response.json();
-    
+
     if (data) {
-      const Schools = data.map((item)=>{
-        return new School(
-          item.school_name,
-          item.latitude,
-          item.longitude
-        );
+      const Schools = data.map((item) => {
+        return new School(item.school_name, item.latitude, item.longitude);
       });
       setSchool(Schools);
     }
-
-  } catch(error) {
+  } catch (error) {
     console.error("Error fetching schools: ", error);
   }
-}
+};
 
 const fetchHdbs = async (setHdbs) => {
   try {
@@ -96,6 +85,7 @@ const fetchHdbs = async (setHdbs) => {
     const data = await response.json();
     if (data) {
       const shuffledData = [...data];
+      // Shuffle the array
       for (let i = shuffledData.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffledData[i], shuffledData[j]] = [shuffledData[j], shuffledData[i]];
@@ -139,6 +129,20 @@ function DynamicMap() {
 
   const [popupInfo, setPopupInfo] = useState(null);
 
+  const [cache, setCache] = useState([]); // cache state for side panel
+
+  const pushCache = (element) => {
+    setCache((prevCache) => [...prevCache, element]);
+  };
+
+  const popCache = () => {
+    setCache((prevCache) => prevCache.slice(0, -1));
+  };
+
+  const clearCache = () => {
+    setCache([]);
+  };
+
   useEffect(() => {
     fetchTrafficCameras(setTrafficCameras);
     fetchHdbs(setHdbs);
@@ -146,44 +150,19 @@ function DynamicMap() {
     fetchSchool(setSchools);
   }, []);
 
-  {
-    /*
-        
-        there's dupliates in addres need to check the reason why 
-
-        using var.map(), key needs to be supplied and supposed to be unique
-
-        otherwise will have warnings and may have future bugs
-
-        */
-  }
-
+  // Prepare HDB markers using our updated getMapIcon method
   const hdbpins = useMemo(
-    () =>
-      hdbs.map((hdb) => (
-        <Marker
-          latitude={hdb.latitude}
-          longitude={hdb.longitude}
-          key={`marker-${hdb.address}`}
-          anchor="bottom"
-          onClick={(e) => {
-            e.originalEvent.stopPropagation(); // this prevents propogation to Map
-            setPopupInfo(hdb);
-          }}
-        >
-          <HousePin />
-        </Marker>
-      )),
-    [hdbs] // dependencies, rn it is just hdbs, but can put filtered-hdb or sth to reflect changes
+    () => hdbs.map((hdb) => hdb.getMapIcon({ pushCache })),
+    [hdbs]
   );
 
   return (
-    <div
-      style={{
-        width: "100wh",
-        height: "100vh",
-      }}
-    >
+    <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
+      {/* Side Panel */}
+      {cache.length > 0 &&
+        cache[cache.length - 1].getSidePanel({ clearCache, popCache })}
+
+      {/* Toggle Buttons */}
       <div
         style={{
           position: "absolute",
@@ -206,53 +185,38 @@ function DynamicMap() {
           <span>Display Traffic Camera</span>
         </div>
         <div>
-        <Switch defaultChecked onChange={() => setShowMRT(!showMRT)} />
-        <span>Display MRT</span>
+          <Switch defaultChecked onChange={() => setShowMRT(!showMRT)} />
+          <span>Display MRT</span>
         </div>
         <div>
-          <Switch defaultChecked onChange={()=> setShowSchool(!showSchool)}/>
+          <Switch defaultChecked onChange={() => setShowSchool(!showSchool)} />
           <span>Display School</span>
         </div>
       </div>
+
       <Map
         maxBounds={[103.596, 1.1443, 104.1, 1.4835]}
         mapStyle="https://www.onemap.gov.sg/maps/json/raster/mbstyle/Default.json"
-        /* this is the TILEjson get */
         initialViewState={{
           longitude: initialLongitude,
           latitude: initialLatitude,
           zoom: initialZoom,
         }}
       >
-        {/* imma place nav controls here */}
-
         <GeolocateControl
-          position="top-left"
-          trackUserLocation="false"
-          showAccuracyCircle="false"
+          position="bottom-right"
+          showAccuracyCircle={false}
+          trackUserLocation={false}
         />
-        <FullscreenControl position="top-left" />
-        <NavigationControl position="top-left" />
+        <FullscreenControl position="bottom-right" />
+        <NavigationControl position="bottom-right" />
         <ScaleControl />
 
-        {/* {hdbpins} */}
-
-        {popupInfo && (
-          <Popup
-            anchor="top"
-            longitude={Number(popupInfo.longitude)}
-            latitude={Number(popupInfo.latitude)}
-            onClose={() => setPopupInfo(null)}
-          >
-            <div>
-              <p>{popupInfo.address}</p>
-            </div>
-          </Popup>
-        )}
-
         {showTrafficCamera &&
-          trafficCameras.map((trafficCamera) => trafficCamera.getMapIcon())}
-        {showHdb && hdbs.map((hdb) => hdb.getMapIcon(setPopupInfo))}
+          trafficCameras.map((trafficCamera) =>
+            trafficCamera.getMapIcon({ pushCache })
+          )}
+        {showHdb && hdbpins}
         {showMRT && MRTs.map((MRT) => MRT.getMapIconMRT())}
         {showSchool && Schools.map((School) => School.getSchoolMapIcon())}
       </Map>

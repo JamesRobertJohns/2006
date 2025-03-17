@@ -1,3 +1,10 @@
+import "./Sidebar.css";
+import { IoArrowBackSharp } from "react-icons/io5";
+import { FaMosquito } from "react-icons/fa6";
+import { FaTrainSubway } from "react-icons/fa6";
+import { FaBed } from "react-icons/fa";
+import { FaRestroom } from "react-icons/fa";
+import { BsHouse } from "react-icons/bs";
 import { Marker } from "react-map-gl/maplibre";
 import { FaHome } from "react-icons/fa";
 const primaryColor = "#2D4059";
@@ -8,7 +15,7 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     borderRadius: "50%",
-    border: "2.5px solid" + primaryColor,
+    border: "2.5px solid " + primaryColor,
     backgroundColor: "white",
     padding: 4,
   },
@@ -70,20 +77,77 @@ class Hdb {
     return this.longitude;
   }
 
-  getMapIcon(setPopupInfo) {
+  getMapIcon({ pushCache }) {
     return (
       <Marker
         latitude={this.latitude}
         longitude={this.longitude}
+        key={`marker-${this.address}`}
+        cursor="pointer"
         onClick={(e) => {
           e.originalEvent.stopPropagation();
-          setPopupInfo(this);
+          pushCache(this);
         }}
       >
         <div style={styles.iconContainer}>
-          <FaHome size={30} style={styles.icon} />
+          <FaHome size={30} cursor="pointer" style={styles.icon} />
         </div>
       </Marker>
+    );
+  }
+
+  getSidePanel({ clearCache, popCache }) {
+    const formatPrice = (price) => {
+      return Number(price).toLocaleString();
+    };
+
+    return (
+      <div className={`sidebar ${"open"}`}>
+        <div className="sidebar-header">
+          {/* Consider making this dynamic if you have images for each property */}
+          {/*<img src="block426.jpeg" alt="Property" />*/}
+          <button
+            className="close-btn"
+            onClick={() => {
+              popCache();
+            }}
+          >
+            <IoArrowBackSharp />
+          </button>
+          <button
+            className="close-btn"
+            onClick={() => {
+              clearCache();
+            }}
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="sidebar-content">
+          <h2 className="rent-price">S${formatPrice(this.resale_price)}</h2>
+          <h5 className="property-name">{this.address}</h5>
+          <p className="sub-info">Lease hremaining: {this.remaining_lease}</p>
+
+          <div className="property-details">
+            <p>
+              <FaBed /> {this.flat_type}
+            </p>
+            <p>
+              <BsHouse /> {this.floor_area_sqm} m²
+            </p>
+            <p>
+              <FaRestroom /> Block: {this.block}
+            </p>
+            <p>
+              <FaMosquito /> Dengue: 1000
+            </p>
+            <p>
+              <FaTrainSubway /> Nearest Train: 5 min
+            </p>
+          </div>
+        </div>
+      </div>
     );
   }
 }
