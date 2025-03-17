@@ -132,7 +132,7 @@ class Hdb {
           <div className="property-details">
             <p>
               <FaBed /> {this.flat_type}
-            </p>
+            </p>  
             <p>
               <BsHouse /> {this.floor_area_sqm} m²
             </p>

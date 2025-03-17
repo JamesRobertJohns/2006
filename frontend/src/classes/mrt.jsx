@@ -1,5 +1,6 @@
 import { Marker } from "react-map-gl/dist/esm/exports-maplibre";
 import { FaTrain } from "react-icons/fa6";
+import { IoArrowBackSharp } from "react-icons/io5";
 
 const primaryColor = "#1b1915";
 
@@ -22,7 +23,7 @@ const styles = {
     constructor(
         name,
         latitude,
-        longitude
+        longitude,
     ) {
         this.name = name;
         this.latitude = latitude;
@@ -31,7 +32,7 @@ const styles = {
     getMrtName() {
         return this.name;
       }
-    
+
       getLatitude() {
         return this.latitude;
       }
@@ -40,18 +41,49 @@ const styles = {
         return this.longitude;
       }
     
-      getMapIconMRT() {
+      getMapIconMRT({ pushCache }) {
         return (
             <Marker
             name = {this.name}
             latitude={this.latitude}
             longitude={this.longitude}
+            cursor="pointer"
+            onClick={(e) => {
+              e.originalEvent.stopPropagation();
+              pushCache(this);
+            }}
             >
                 <div style={styles.iconContainer}>
-                    <FaTrain size={22} style={styles.icon}/>
+                    <FaTrain cursor = "pointer" size={22} style={styles.icon}/>
                 </div>
             </Marker>
         );
+      }
+
+      getSidePanel({ clearCache, popCache}) {
+        return (
+          <div className={`sidebar ${"open"}`}>
+            <div className="sidebar-header">
+              <button className="close-btn"
+              onClick={() => {
+                popCache();
+              }}
+              >
+                <IoArrowBackSharp />
+              </button>
+              <button className="close-btn"
+              onClick={()=> {
+                clearCache();
+              }}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="sidebar-content">
+              <h2 className="mrt-name">{this.name}</h2>
+            </div>
+          </div>
+        )
       }
   }
 

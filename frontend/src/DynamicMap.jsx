@@ -70,7 +70,17 @@ const fetchSchool = async (setSchool) => {
 
     if (data) {
       const Schools = data.map((item) => {
-        return new School(item.school_name, item.latitude, item.longitude);
+        return new School(
+          item.school_name,
+          item.address,
+          item.postal_code,
+          item.url_address,
+          item.telephone_no,
+          item.email_address,
+          item.mrt_desc,
+          item.bus_desc,
+          item.latitude, 
+          item.longitude);
       });
       setSchool(Schools);
     }
@@ -217,8 +227,8 @@ function DynamicMap() {
             trafficCamera.getMapIcon({ pushCache })
           )}
         {showHdb && hdbpins}
-        {showMRT && MRTs.map((MRT) => MRT.getMapIconMRT())}
-        {showSchool && Schools.map((School) => School.getSchoolMapIcon())}
+        {showMRT && MRTs.map((MRT) => MRT.getMapIconMRT({pushCache}))}
+        {showSchool && Schools.map((School) => School.getSchoolMapIcon({pushCache}))}
       </Map>
     </div>
   );
