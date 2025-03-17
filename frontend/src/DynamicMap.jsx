@@ -6,7 +6,7 @@ import {
   ScaleControl,
   GeolocateControl,
 } from "react-map-gl/maplibre";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 
 import TrafficCamera from "./classes/TrafficCamera.jsx";
 import Hdb from "./classes/Hdb.jsx";
@@ -79,8 +79,9 @@ const fetchSchool = async (setSchool) => {
           item.email_address,
           item.mrt_desc,
           item.bus_desc,
-          item.latitude, 
-          item.longitude);
+          item.latitude,
+          item.longitude
+        );
       });
       setSchool(Schools);
     }
@@ -132,14 +133,19 @@ function DynamicMap() {
   const [MRTs, setMRTs] = useState([]);
   const [Schools, setSchools] = useState([]);
 
+  const [displayTrafficCameras, setDisplayTrafficCameras] = useState([]);
+  const [displayHdbs, setDisplayHdbs] = useState([]);
+  const [displayMRTs, setDisplayMRTs] = useState([]);
+  const [displaySchools, setDisplaySchools] = useState([]);
+
   const [showHdb, setShowHdb] = useState(true);
   const [showTrafficCamera, setShowTrafficCamera] = useState(true);
   const [showMRT, setShowMRT] = useState(true);
   const [showSchool, setShowSchool] = useState(true);
 
-  const [popupInfo, setPopupInfo] = useState(null);
-
   const [cache, setCache] = useState([]); // cache state for side panel
+
+  const mapRef = useRef();
 
   const pushCache = (element) => {
     setCache((prevCache) => [...prevCache, element]);
@@ -153,6 +159,61 @@ function DynamicMap() {
     setCache([]);
   };
 
+  const setActiveHdb = (element) => {
+    pushCache(element);
+    setDisplayTrafficCameras(getNearestNLocations(trafficCameras, element, 5));
+    setDisplayMRTs(getNearestNLocations(MRTs, element, 3));
+    setDisplaySchools(getNearestNLocations(Schools, element, 3));
+    setDisplayHdbs([element]);
+  };
+
+  const closeSidePanel = () => {
+    clearCache();
+    setDisplayTrafficCameras([]);
+    setDisplayHdbs(hdbs);
+    setDisplayMRTs([]);
+    setDisplaySchools([]);
+    resetFlyToLocation();
+  };
+
+  const euclideanDistance = (obj, target) => {
+    const dx = obj.longitude - target.longitude;
+    const dy = obj.latitude - target.latitude;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  const getNearestNLocations = (locations, target, n) => {
+    return locations
+      .sort((a, b) => {
+        const distanceA = euclideanDistance(a, target);
+        const distanceB = euclideanDistance(b, target);
+        return distanceA - distanceB;
+      })
+      .slice(0, n);
+  };
+
+  const flyToLocation = (latitude, longitude) => {
+    if (mapRef.current) {
+      mapRef.current.flyTo({
+        center: [longitude, latitude],
+        zoom: 13.5,
+        speed: 0.25,
+        curve: 2.5,
+      });
+    }
+  };
+
+  const resetFlyToLocation = () => {
+    if (mapRef.current) {
+      mapRef.current.flyTo({
+        center: [initialLongitude, initialLatitude],
+        zoom: initialZoom,
+        speed: 0.5,
+        curve: 1,
+      });
+    }
+  };
+
   useEffect(() => {
     fetchTrafficCameras(setTrafficCameras);
     fetchHdbs(setHdbs);
@@ -160,9 +221,20 @@ function DynamicMap() {
     fetchSchool(setSchools);
   }, []);
 
+  useEffect(() => {
+    setDisplayHdbs(hdbs);
+  }, [trafficCameras, hdbs, MRTs, Schools]);
+
+  useEffect(() => {
+    if (cache.length > 0) {
+      const activeElement = cache[cache.length - 1];
+      flyToLocation(activeElement.latitude, activeElement.longitude);
+    }
+  }, [cache]);
+
   // Prepare HDB markers using our updated getMapIcon method
   const hdbpins = useMemo(
-    () => hdbs.map((hdb) => hdb.getMapIcon({ pushCache })),
+    () => hdbs.map((hdb) => hdb.getMapIcon({ setActiveHdb })),
     [hdbs]
   );
 
@@ -170,41 +242,50 @@ function DynamicMap() {
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
       {/* Side Panel */}
       {cache.length > 0 &&
-        cache[cache.length - 1].getSidePanel({ clearCache, popCache })}
+        cache[cache.length - 1].getSidePanel({
+          closeSidePanel,
+          popCache,
+        })}
 
       {/* Toggle Buttons */}
-      <div
-        style={{
-          position: "absolute",
-          zIndex: 1,
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-          background: "white",
-        }}
-      >
-        <div>
-          <Switch defaultChecked onChange={() => setShowHdb(!showHdb)} />
-          <span>Display HDB</span>
+      {cache.length > 0 && (
+        <div
+          style={{
+            position: "absolute",
+            zIndex: 1,
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            background: "white",
+          }}
+        >
+          <div>
+            <Switch defaultChecked onChange={() => setShowHdb(!showHdb)} />
+            <span>Display HDB</span>
+          </div>
+          <div>
+            <Switch
+              defaultChecked
+              onChange={() => setShowTrafficCamera(!showTrafficCamera)}
+            />
+            <span>Display Traffic Camera</span>
+          </div>
+          <div>
+            <Switch defaultChecked onChange={() => setShowMRT(!showMRT)} />
+            <span>Display MRT</span>
+          </div>
+          <div>
+            <Switch
+              defaultChecked
+              onChange={() => setShowSchool(!showSchool)}
+            />
+            <span>Display School</span>
+          </div>
         </div>
-        <div>
-          <Switch
-            defaultChecked
-            onChange={() => setShowTrafficCamera(!showTrafficCamera)}
-          />
-          <span>Display Traffic Camera</span>
-        </div>
-        <div>
-          <Switch defaultChecked onChange={() => setShowMRT(!showMRT)} />
-          <span>Display MRT</span>
-        </div>
-        <div>
-          <Switch defaultChecked onChange={() => setShowSchool(!showSchool)} />
-          <span>Display School</span>
-        </div>
-      </div>
+      )}
 
       <Map
+        ref={mapRef}
         maxBounds={[103.596, 1.1443, 104.1, 1.4835]}
         mapStyle="https://www.onemap.gov.sg/maps/json/raster/mbstyle/Default.json"
         initialViewState={{
@@ -223,12 +304,15 @@ function DynamicMap() {
         <ScaleControl />
 
         {showTrafficCamera &&
-          trafficCameras.map((trafficCamera) =>
+          displayTrafficCameras.map((trafficCamera) =>
             trafficCamera.getMapIcon({ pushCache })
           )}
-        {showHdb && hdbpins}
-        {showMRT && MRTs.map((MRT) => MRT.getMapIconMRT({pushCache}))}
-        {showSchool && Schools.map((School) => School.getSchoolMapIcon({pushCache}))}
+        {showHdb && displayHdbs.map((hdb) => hdb.getMapIcon({ setActiveHdb }))}
+        {showMRT && displayMRTs.map((MRT) => MRT.getMapIconMRT({ pushCache }))}
+        {showSchool &&
+          displaySchools.map((School) =>
+            School.getSchoolMapIcon({ pushCache })
+          )}
       </Map>
     </div>
   );

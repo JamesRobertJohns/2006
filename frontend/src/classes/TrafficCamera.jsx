@@ -63,7 +63,7 @@ class TrafficCamera {
     );
   }
 
-  getSidePanel({ clearCache, popCache }) {
+  getSidePanel({ closeSidePanel, popCache }) {
     const formatTimestamp = (timestamp) => {
       const date = new Date(timestamp);
 
@@ -96,7 +96,7 @@ class TrafficCamera {
           <button
             className="close-btn"
             onClick={() => {
-              clearCache();
+              closeSidePanel();
             }}
           >
             ✕

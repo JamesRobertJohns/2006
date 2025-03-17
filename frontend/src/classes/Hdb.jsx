@@ -77,7 +77,7 @@ class Hdb {
     return this.longitude;
   }
 
-  getMapIcon({ pushCache }) {
+  getMapIcon({ setActiveHdb }) {
     return (
       <Marker
         latitude={this.latitude}
@@ -86,7 +86,7 @@ class Hdb {
         cursor="pointer"
         onClick={(e) => {
           e.originalEvent.stopPropagation();
-          pushCache(this);
+          setActiveHdb(this);
         }}
       >
         <div style={styles.iconContainer}>
@@ -96,7 +96,7 @@ class Hdb {
     );
   }
 
-  getSidePanel({ clearCache, popCache }) {
+  getSidePanel({ closeSidePanel, popCache }) {
     const formatPrice = (price) => {
       return Number(price).toLocaleString();
     };
@@ -106,18 +106,11 @@ class Hdb {
         <div className="sidebar-header">
           {/* Consider making this dynamic if you have images for each property */}
           {/*<img src="block426.jpeg" alt="Property" />*/}
+          <button className="close-btn" onClick={() => {}}></button>
           <button
             className="close-btn"
             onClick={() => {
-              popCache();
-            }}
-          >
-            <IoArrowBackSharp />
-          </button>
-          <button
-            className="close-btn"
-            onClick={() => {
-              clearCache();
+              closeSidePanel();
             }}
           >
             ✕
@@ -132,7 +125,7 @@ class Hdb {
           <div className="property-details">
             <p>
               <FaBed /> {this.flat_type}
-            </p>  
+            </p>
             <p>
               <BsHouse /> {this.floor_area_sqm} m²
             </p>
