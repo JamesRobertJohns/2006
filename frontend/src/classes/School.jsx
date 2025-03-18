@@ -8,6 +8,11 @@ import { FaPhone } from "react-icons/fa6";
 import { PiTrainBold } from "react-icons/pi";
 import { BsFillBusFrontFill } from "react-icons/bs";
 
+const handleLinkClick = (event) => {
+  event.preventDefault();
+  window.open(event.target.href, '_blank', 'noopener,noreferrer');
+}
+
 const primaryColor = "blue";
 
 const styles = {
@@ -109,6 +114,7 @@ class School {
     );
   }
 
+ 
   getSidePanel({ closeSidePanel, popCache }) {
     return (
       <div className={`sidebar ${"open"}`}>
@@ -140,7 +146,7 @@ class School {
               <FaPhone /> {this.contact_number}
             </p>
             <p>
-              <TbWorld /> <Link to={this.url_address}>{this.url_address}</Link>
+              <TbWorld /> <a href={this.url_address} onClick={handleLinkClick}>Official Website</a>
             </p>
             <p>
               <MdEmail /> {this.school_email}
