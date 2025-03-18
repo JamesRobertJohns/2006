@@ -19,6 +19,7 @@ import Hdb from "./classes/Hdb.jsx";
 import Switch from "@mui/material/Switch";
 import Mrt from "./classes/mrt.jsx";
 import School from "./classes/School.jsx";
+import HDBContext from "./HDBContext.jsx";
 
 const initialLongitude = 103.81895378099354;
 const initialLatitude = 1.356474868742945;
@@ -134,8 +135,9 @@ const fetchHdbs = async (setHdbs) => {
 };
 
 function DynamicMap() {
+  const { filteredHdbs, setFilteredHdbs } = useContext(HDBContext);
   const [trafficCameras, setTrafficCameras] = useState([]);
-  const [hdbs, setHdbs] = useState([]);
+  //const [hdbs, setHdbs] = useState([]);
   const [MRTs, setMRTs] = useState([]);
   const [Schools, setSchools] = useState([]);
 
@@ -176,7 +178,7 @@ function DynamicMap() {
   const closeSidePanel = () => {
     clearCache();
     setDisplayTrafficCameras([]);
-    setDisplayHdbs(hdbs);
+    setDisplayHdbs(filteredHdbs);
     setDisplayMRTs([]);
     setDisplaySchools([]);
     resetFlyToLocation();
@@ -222,14 +224,14 @@ function DynamicMap() {
 
   useEffect(() => {
     fetchTrafficCameras(setTrafficCameras);
-    fetchHdbs(setHdbs);
+    //fetchHdbs(setHdbs);
     fetchMrt(setMRTs);
     fetchSchool(setSchools);
   }, []);
 
   useEffect(() => {
-    setDisplayHdbs(hdbs);
-  }, [trafficCameras, hdbs, MRTs, Schools]);
+    setDisplayHdbs(filteredHdbs);
+  }, [trafficCameras, filteredHdbs, MRTs, Schools]);
 
   useEffect(() => {
     if (cache.length > 0) {
@@ -239,10 +241,11 @@ function DynamicMap() {
   }, [cache]);
 
   // Prepare HDB markers using our updated getMapIcon method
-  const hdbpins = useMemo(
-    () => hdbs.map((hdb) => hdb.getMapIcon({ setActiveHdb })),
-    [hdbs]
+  /**const hdbpins = useMemo(
+    () => filteredHdbList.map((hdb) => hdb.getMapIcon({ setActiveHdb })),
+    [filteredHdbList]
   );
+  **/
 
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>

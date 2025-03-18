@@ -1,5 +1,5 @@
-import * as ReactDOM from "react-dom/client";
 
+import * as ReactDOM from "react-dom/client";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -9,6 +9,7 @@ import App from "./App.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
 import TutorialPage from "./pages/TutorialPage.jsx";
+import HDBProvider from "./HDBProvider.jsx";  
 
 const router = createBrowserRouter([
   {
@@ -24,8 +25,10 @@ const router = createBrowserRouter([
     path: '/tutorial',
     element: <TutorialPage />,
   },
-]); 
+]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <RouterProvider router={router} />
+  <HDBProvider>
+    <RouterProvider router={router} />
+  </HDBProvider>
 );

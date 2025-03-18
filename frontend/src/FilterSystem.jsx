@@ -3,11 +3,13 @@ import Filter from "./Filter/Filter.jsx";
 import { useNavigate } from "react-router-dom";
 import Hdb from "./classes/Hdb.jsx";
 import TownToRegionMap from "./TownToRegion.json";
+import DynamicMap from "./DynamicMap.jsx"; 
+import HDBContext from "./HDBContext.jsx";
 
 function FilterSystem() {
-
+   const { filteredHdbs, setFilteredHdbs } = useContext(HDBContext);
   const [allHdbs, setAllHdbs] = useState([]); 
-  const [filteredHdbs, setFilteredHdbs] = useState([]); 
+  // const [filteredHdbs, setFilteredHdbs] = useState([]); 
 
   useEffect(() => {
     const fetchHdbs = async () => {
