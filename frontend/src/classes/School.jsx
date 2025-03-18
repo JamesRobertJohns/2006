@@ -11,6 +11,7 @@ import { BsFillBusFrontFill } from "react-icons/bs";
 const handleLinkClick = (event) => {
   event.preventDefault();
   window.open(event.target.href, '_blank', 'noopener,noreferrer');
+  // the third param is for security
 }
 
 const primaryColor = "blue";

@@ -1,12 +1,12 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import FilterBar from "../FilterBar.jsx";
+import FilterSystem from "../FilterSystem.jsx";
 import Header from "../Header.jsx";
 
 function LandingPage() {
   return (
     <>
       <Header />
-      <FilterBar /> 
+      <FilterSystem /> 
     </>
   );
 };

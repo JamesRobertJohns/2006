@@ -10,7 +10,6 @@ function Header() {
         <Container>
           <Navbar.Brand href="#home">HDBuddy</Navbar.Brand>
           <Nav className="me-auto">
-            <Nav.Link href="#home">About</Nav.Link>
             <Nav.Link href="/tutorial">Tutorial</Nav.Link>
             <Nav.Link href="/map">Map</Nav.Link>
           </Nav>
