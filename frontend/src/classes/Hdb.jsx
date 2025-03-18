@@ -82,7 +82,7 @@ class Hdb {
       <Marker
         latitude={this.latitude}
         longitude={this.longitude}
-        key={`marker-${this.address}`}
+        key={`marker-${this.key}`}
         cursor="pointer"
         onClick={(e) => {
           e.originalEvent.stopPropagation();

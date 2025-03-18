@@ -97,47 +97,9 @@ const fetchSchool = async (setSchool) => {
   }
 };
 
-const fetchHdbs = async (setHdbs) => {
-  try {
-    const response = await fetch("./hdb.json");
-    const data = await response.json();
-    if (data) {
-      const shuffledData = [...data];
-      // Shuffle the array
-      for (let i = shuffledData.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffledData[i], shuffledData[j]] = [shuffledData[j], shuffledData[i]];
-      }
-      const smallData = shuffledData.slice(0, 75);
-      const hdbs = smallData.map((item) => {
-        return new Hdb(
-          item.month,
-          item.town,
-          item.flat_type,
-          item.block,
-          item.street_name,
-          item.storey_range,
-          item.floor_area_sqm,
-          item.flat_model,
-          item.lease_commence_date,
-          item.remaining_lease,
-          item.resale_price,
-          item.address,
-          item.latitude,
-          item.longitude
-        );
-      });
-      setHdbs(hdbs);
-    }
-  } catch (error) {
-    console.error("Error fetching:", error);
-  }
-};
-
 function DynamicMap() {
   const { filteredHdbs, setFilteredHdbs } = useContext(HDBContext);
   const [trafficCameras, setTrafficCameras] = useState([]);
-  //const [hdbs, setHdbs] = useState([]);
   const [MRTs, setMRTs] = useState([]);
   const [Schools, setSchools] = useState([]);
 
@@ -224,14 +186,13 @@ function DynamicMap() {
 
   useEffect(() => {
     fetchTrafficCameras(setTrafficCameras);
-    //fetchHdbs(setHdbs);
     fetchMrt(setMRTs);
     fetchSchool(setSchools);
   }, []);
 
   useEffect(() => {
-    setDisplayHdbs(filteredHdbs);
-  }, [trafficCameras, filteredHdbs, MRTs, Schools]);
+      setDisplayHdbs(filteredHdbs);
+  }, [filteredHdbs]);
 
   useEffect(() => {
     if (cache.length > 0) {
@@ -240,12 +201,6 @@ function DynamicMap() {
     }
   }, [cache]);
 
-  // Prepare HDB markers using our updated getMapIcon method
-  /**const hdbpins = useMemo(
-    () => filteredHdbList.map((hdb) => hdb.getMapIcon({ setActiveHdb })),
-    [filteredHdbList]
-  );
-  **/
 
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>

@@ -9,15 +9,14 @@ import HDBContext from "./HDBContext.jsx";
 function FilterSystem() {
    const { filteredHdbs, setFilteredHdbs } = useContext(HDBContext);
   const [allHdbs, setAllHdbs] = useState([]); 
-  // const [filteredHdbs, setFilteredHdbs] = useState([]); 
 
   useEffect(() => {
     const fetchHdbs = async () => {
       try {
         const response = await fetch("./hdb.json");
         const data = await response.json();
-        const hdbs = data.map((item) => {
-          return new Hdb(
+        const hdbs = data.map((item, index) => {
+          const hdb = new Hdb(
             item.month,
             item.town,
             item.flat_type,
@@ -33,6 +32,8 @@ function FilterSystem() {
             item.latitude,
             item.longitude
           );
+          hdb.key = `${index}`;
+          return hdb;
         });
         setAllHdbs(hdbs); 
         setFilteredHdbs(hdbs); 
@@ -124,7 +125,7 @@ function FilterSystem() {
    * filtering of lease life will only use the years
    * i.e. round down to year, discard months
   */
-  useMemo(() => {
+  useEffect(() => {
     let filtered = allHdbs;
 
     if (selected.region) {
@@ -203,7 +204,7 @@ function FilterSystem() {
     }
 
     setFilteredHdbs(filtered);
-  }, [selected]);
+  }, [selected, allHdbs]);
 
   return (
     <>
