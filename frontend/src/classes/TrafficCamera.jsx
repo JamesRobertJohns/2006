@@ -4,6 +4,10 @@ import { IoTimerSharp } from "react-icons/io5";
 import { Marker } from "react-map-gl/maplibre";
 import { PiSecurityCameraBold } from "react-icons/pi";
 
+
+/**
+ * Inline styling for Traffic Camera icons
+ */
 const primaryColor = "#F07B3F";
 
 const styles = {
@@ -21,7 +25,25 @@ const styles = {
   },
 };
 
+
+/** 
+ * Models a Traffic Camera object using data from data.gov.sg
+ *
+ * @class TrafficCamera 
+ * @classdesc supports getters, rendering of side panel and marker
+  */
 class TrafficCamera {
+  /**
+   * constructor for Traffic Camera object
+   *
+  * @constructs a Traffic Camera object
+  * @param id of the traffic camera provided by LTA
+  * @param url of image
+  * @param latitude
+  * @param longitude
+  * @param timestamp - Time of acquisition of data from LTA's Datamall
+
+  */
   constructor(id, url, latitude, longitude, timestamp) {
     this.id = id;
     this.url = url;
@@ -42,6 +64,15 @@ class TrafficCamera {
     return this.longitude;
   }
 
+  
+  /**
+   * Returns <Marker /> component initialised with the traffic camera's coordinates 
+   * and icon.
+   *
+   * @param {function} pushCache 
+   * @return <Marker /> from maplibre 
+   *
+   */
   getMapIcon({ pushCache }) {
     return (
       <Marker
@@ -63,6 +94,14 @@ class TrafficCamera {
     );
   }
 
+  /**
+   * Renders side panel by creating <div> and <p> elements
+   *
+   * @param {function} closeSidePanel
+   * @para {function} popCache
+   * @description loads relevant attributes from Traffic Camera objects 
+   * @return the rendered side panel
+   */
   getSidePanel({ closeSidePanel, popCache }) {
     const formatTimestamp = (timestamp) => {
       const date = new Date(timestamp);

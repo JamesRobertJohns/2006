@@ -1,3 +1,7 @@
+
+/** Renders Tutorial Page
+  *
+  */
 function TutorialPage() {
   return (
     <div>

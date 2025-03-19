@@ -8,14 +8,26 @@ import { FaPhone } from "react-icons/fa6";
 import { PiTrainBold } from "react-icons/pi";
 import { BsFillBusFrontFill } from "react-icons/bs";
 
+/**
+ * Handles the link clicking event.
+ * 
+ * Opens link in a new tab instead of overwritting current tab.
+ *
+ * @param {MouseEvent} event - Click event triggered by user.
+ * @listens click - Event listener is attached to a <a> element 
+ *
+ * @author Jia Yang
+ */
 const handleLinkClick = (event) => {
   event.preventDefault();
   window.open(event.target.href, '_blank', 'noopener,noreferrer');
   // the third param is for security
 }
 
+/**
+ * Inline styling for School Icon
+ */
 const primaryColor = "blue";
-
 const styles = {
   iconContainer: {
     display: "flex",
@@ -31,7 +43,29 @@ const styles = {
   },
 };
 
+
+/** 
+ * Models a Primary / Secondaary School object using data from data.gov.sg
+ *
+ * @class School 
+ * @classdesc supports getters, rendering of side panel and marker
+  */
 class School {
+  /**
+   * constructor for School object
+   *
+  * @constructs a School object
+  * @param {string} school_name 
+  * @param {string} address of school 
+  * @param {string} postal_code of school
+  * @param {string} url_address of school website
+  * @param {string} contact_number of school general office 
+  * @param {string} school_email
+  * @param {string} nearest_mrt to the school
+  * @param {string} bus_services to get to the school
+  * @param {string} latitude
+  * @param {string} longitude
+  */
   constructor(
     school_name,
     address,
@@ -96,6 +130,14 @@ class School {
     return this.longitude;
   }
 
+  /**
+   * Returns <Marker /> component initialised with the school's coordinates 
+   * and icon.
+   *
+   * @param {function} pushCache 
+   * @return <Marker /> from maplibre 
+   *
+   */
   getSchoolMapIcon({ pushCache }) {
     return (
       <Marker
@@ -115,7 +157,15 @@ class School {
     );
   }
 
- 
+
+  /**
+   * Renders side panel by creating <div> and <p> elements
+   *
+   * @param {function} closeSidePanel
+   * @para {function} popCache
+   * @description loads relevant attributes from Primary School objects 
+   * @return the rendered side panel
+   */
   getSidePanel({ closeSidePanel, popCache }) {
     return (
       <div className={`sidebar ${"open"}`}>
