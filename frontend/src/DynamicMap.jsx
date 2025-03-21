@@ -17,7 +17,7 @@ import {
 import TrafficCamera from "./classes/TrafficCamera.jsx";
 import Hdb from "./classes/Hdb.jsx";
 import Switch from "@mui/material/Switch";
-import Mrt from "./classes/mrt.jsx";
+import Mrt from "./classes/Mrt.jsx";
 import School from "./classes/School.jsx";
 import HDBContext from "./HDBContext.jsx";
 
