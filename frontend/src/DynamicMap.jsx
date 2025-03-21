@@ -1,11 +1,5 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import {
-  Map,
-  NavigationControl,
-  FullscreenControl,
-  ScaleControl,
-  GeolocateControl,
-} from "react-map-gl/maplibre";
+import { Map } from "react-map-gl/maplibre";
 import { 
   useState, 
   useEffect, 
@@ -20,6 +14,7 @@ import Switch from "@mui/material/Switch";
 import Mrt from "./classes/Mrt.jsx";
 import School from "./classes/School.jsx";
 import HDBContext from "./HDBContext.jsx";
+import MapControl from "./MapControl.jsx";
 
 const initialLongitude = 103.81895378099354;
 const initialLatitude = 1.356474868742945;
@@ -97,6 +92,10 @@ const fetchSchool = async (setSchool) => {
   }
 };
 
+/**
+ * Renders an interactable map component using maplibre
+ *
+ */
 function DynamicMap() {
   const { filteredHdbs, setFilteredHdbs } = useContext(HDBContext);
   const [trafficCameras, setTrafficCameras] = useState([]);
@@ -258,15 +257,9 @@ function DynamicMap() {
           zoom: initialZoom,
         }}
       >
-        <GeolocateControl
-          position="bottom-right"
-          showAccuracyCircle={false}
-          trackUserLocation={false}
-        />
-        <FullscreenControl position="bottom-right" />
-        <NavigationControl position="bottom-right" />
-        <ScaleControl />
 
+        <MapControl />
+        
         {showTrafficCamera &&
           displayTrafficCameras.map((trafficCamera) =>
             trafficCamera.getMapIcon({ pushCache })
