@@ -24,7 +24,16 @@ const styles = {
   },
 };
 
+/**
+ * Abstraction for an HDB object using attributes from data.gov.sg
+ *
+ * @class Hdb
+ * @classdesc supports setters and getters, and  renderign of marker
+ */
 class Hdb {
+  /**
+   * @constructs Hdb object
+   */
   constructor(
     month,
     town,
@@ -77,6 +86,13 @@ class Hdb {
     return this.longitude;
   }
 
+  /**
+   * Returns <Marker /> component initialised with the HDB flat's coordinate
+   * and icon.
+   *
+   * @param {function} setActiveHdb, from useState()
+   * @return <Marker /> from maplibre 
+   */
   getMapIcon({ setActiveHdb }) {
     return (
       <Marker
@@ -96,6 +112,12 @@ class Hdb {
     );
   }
 
+  /**
+   * @param {function} closeSidePanel
+   * @para {function} popCache
+   *
+   * @return the rendered side panel
+   */
   getSidePanel({ closeSidePanel, popCache }) {
     const formatPrice = (price) => {
       return Number(price).toLocaleString();
@@ -104,8 +126,6 @@ class Hdb {
     return (
       <div className={`sidebar ${"open"}`}>
         <div className="sidebar-header">
-          {/* Consider making this dynamic if you have images for each property */}
-          {/*<img src="block426.jpeg" alt="Property" />*/}
           <button className="close-btn" onClick={() => {}}></button>
           <button
             className="close-btn"

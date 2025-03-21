@@ -5,7 +5,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import App from "./App.jsx";
+import DynamicMap from "./DynamicMap.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
 import TutorialPage from "./pages/TutorialPage.jsx";
@@ -19,7 +19,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/map',
-    element: <App />,
+    element: <DynamicMap />,
   },
   {
     path: '/tutorial',
