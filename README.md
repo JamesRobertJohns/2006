@@ -9,9 +9,10 @@ $ git clone https://github.com/JamesRobertJohns/2006.git
 $ cd 2006/frontend
 $ npm install
 ```
-## Run
+## Preview
 
 ```
 $ cd 2006/frontend
 $ npm run build
+$ npm run preview
 ```
