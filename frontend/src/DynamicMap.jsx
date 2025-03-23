@@ -1,11 +1,5 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import {
-  Map,
-  NavigationControl,
-  FullscreenControl,
-  ScaleControl,
-  GeolocateControl,
-} from "react-map-gl/maplibre";
+import { Map } from "react-map-gl/maplibre";
 import { 
   useState, 
   useEffect, 
@@ -17,9 +11,10 @@ import {
 import TrafficCamera from "./classes/TrafficCamera.jsx";
 import Hdb from "./classes/Hdb.jsx";
 import Switch from "@mui/material/Switch";
-import Mrt from "./classes/mrt.jsx";
+import Mrt from "./classes/Mrt.jsx";
 import School from "./classes/School.jsx";
 import HDBContext from "./HDBContext.jsx";
+import MapControl from "./MapControl.jsx";
 
 const initialLongitude = 103.81895378099354;
 const initialLatitude = 1.356474868742945;
@@ -97,6 +92,10 @@ const fetchSchool = async (setSchool) => {
   }
 };
 
+/**
+ * Renders an interactable map component using maplibre
+ *
+ */
 function DynamicMap() {
   const { filteredHdbs, setFilteredHdbs } = useContext(HDBContext);
   const [trafficCameras, setTrafficCameras] = useState([]);
@@ -129,14 +128,22 @@ function DynamicMap() {
     setCache([]);
   };
 
+  /**
+   * Specify the sequence of events that happens for each display arrat when a valid object is set.
+   *
+   * @param {class} element - a valid class with longitude and latitude. Refers to a HDB
+   */
   const setActiveHdb = (element) => {
     pushCache(element);
     setDisplayTrafficCameras(getNearestNLocations(trafficCameras, element, 5));
-    setDisplayMRTs(getNearestNLocations(MRTs, element, 3));
+    setDisplayMRTs(getNearestNLocations(MRTs, element, 1));
     setDisplaySchools(getNearestNLocations(Schools, element, 3));
     setDisplayHdbs([element]);
   };
 
+  /**
+   * Clean up events after closing side panel
+   */
   const closeSidePanel = () => {
     clearCache();
     setDisplayTrafficCameras([]);
@@ -146,12 +153,26 @@ function DynamicMap() {
     resetFlyToLocation();
   };
 
+  /**
+   * Calculates Euclidean Distance between two positions
+   * 
+   * @param obj - a valid class object 
+   * @param target - a valid class boject
+   * @return the euclidean distnace
+   */
   const euclideanDistance = (obj, target) => {
     const dx = obj.longitude - target.longitude;
     const dy = obj.latitude - target.latitude;
     return Math.sqrt(dx * dx + dy * dy);
   };
 
+  /**
+   * Wrapper for euclideanDistance.
+   *
+   * @param locations - array of objects with longitude and latitude attributes
+   * @param target - target location with longitude and latitude attributes
+   * @return sorted array in non-decreasing order of euclidean distance
+   */
   const getNearestNLocations = (locations, target, n) => {
     return locations
       .sort((a, b) => {
@@ -162,6 +183,13 @@ function DynamicMap() {
       .slice(0, n);
   };
 
+   /* 
+   * Call maplibre method flyTo on interaction with Marker by
+   * zooming on that location.
+   *
+   * @param latitude of map object
+   * @param longitude of map object
+   */
   const flyToLocation = (latitude, longitude) => {
     if (mapRef.current) {
       mapRef.current.flyTo({
@@ -173,6 +201,9 @@ function DynamicMap() {
     }
   };
 
+  /**
+   * Reset map view to initial zoom
+   */
   const resetFlyToLocation = () => {
     if (mapRef.current) {
       mapRef.current.flyTo({
@@ -184,16 +215,28 @@ function DynamicMap() {
     }
   };
 
+  /**
+   * On load,set TrafficCamera, MRT and School arrays
+   */
   useEffect(() => {
     fetchTrafficCameras(setTrafficCameras);
     fetchMrt(setMRTs);
     fetchSchool(setSchools);
   }, []);
 
+  /**
+   * On Change of filteredHDB arrays, 
+   * set DisplayHdbsarray
+   */
   useEffect(() => {
       setDisplayHdbs(filteredHdbs);
   }, [filteredHdbs]);
 
+  /**
+   * On change of cahce array,
+   * if there are elements on the stack, pop the stack
+   * fly to location in the element
+   */
   useEffect(() => {
     if (cache.length > 0) {
       const activeElement = cache[cache.length - 1];
@@ -258,25 +301,28 @@ function DynamicMap() {
           zoom: initialZoom,
         }}
       >
-        <GeolocateControl
-          position="bottom-right"
-          showAccuracyCircle={false}
-          trackUserLocation={false}
-        />
-        <FullscreenControl position="bottom-right" />
-        <NavigationControl position="bottom-right" />
-        <ScaleControl />
 
+        <MapControl />
+      
+        {/* Toggle Display of Traffic Camera Markers and iterates through displayTrafficCamera array to set Marker*/}
         {showTrafficCamera &&
           displayTrafficCameras.map((trafficCamera) =>
             trafficCamera.getMapIcon({ pushCache })
           )}
-        {showHdb && displayHdbs.map((hdb) => hdb.getMapIcon({ setActiveHdb }))}
+
+        {/* Toggle Display of MRT station Markers and iterates through displayMRT array to set Marker*/}
         {showMRT && displayMRTs.map((MRT) => MRT.getMapIconMRT({ pushCache }))}
+
+        {/* Toggle Display of School Markers */}
         {showSchool &&
           displaySchools.map((School) =>
             School.getSchoolMapIcon({ pushCache })
           )}
+
+
+         {/* Toggle Display of HDB Markers and iterates through displayHdbs array to set Marker*/}
+        {showHdb && displayHdbs.map((hdb) => hdb.getMapIcon({ setActiveHdb }))}
+
       </Map>
     </div>
   );

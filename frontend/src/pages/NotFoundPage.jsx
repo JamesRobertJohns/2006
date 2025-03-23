@@ -1,5 +1,9 @@
 import { Link } from "react-router-dom";
 
+/** Not Found Page whenever users accesses a page not specified in the router
+ *
+ * @author Jia Yang
+ */
 function NotFoundPage() {
   return(
     <div>

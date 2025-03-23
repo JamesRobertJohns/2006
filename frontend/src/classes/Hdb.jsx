@@ -9,6 +9,9 @@ import { Marker } from "react-map-gl/maplibre";
 import { FaHome } from "react-icons/fa";
 const primaryColor = "#2D4059";
 
+/**
+ * inline styling for HDB icon
+ */
 const styles = {
   iconContainer: {
     display: "flex",
@@ -24,7 +27,32 @@ const styles = {
   },
 };
 
+
+/**
+ * Abstraction for an HDB object using attributes from data.gov.sg
+ *
+ * @class Hdb
+ * @classdesc supports setters and getters, and rendering of marker
+ */
 class Hdb {
+  /**
+   * Constructs a HDB object by initialisng relevant attributes.
+   *
+   * @constructs Hdb object
+   * @param {string} month
+   * @param {string} town
+   * @param {string} block
+   * @param {string} street_name
+   * @param {string} storey_range
+   * @param {string} floor_area_sqm
+   * @param {string} flat_model
+   * @param {string} lease_commence_date
+   * @param {string} remaining_lease
+   * @param {string} resale_price
+   * @param {string} address
+   * @param {string} latitude
+   * @param {string} longitude
+   */
   constructor(
     month,
     town,
@@ -77,6 +105,13 @@ class Hdb {
     return this.longitude;
   }
 
+  /**
+   * Returns <Marker /> component initialised with the HDB flat's coordinate
+   * and icon.
+   *
+   * @param {function} setActiveHdb, from useState()
+   * @return <Marker /> from maplibre 
+   */
   getMapIcon({ setActiveHdb }) {
     return (
       <Marker
@@ -96,6 +131,14 @@ class Hdb {
     );
   }
 
+  /**
+   * Renders side panel by creating <div> and <p> elements
+   *
+   * @param {function} closeSidePanel
+   * @para {function} popCache
+   * @description loads relevant attributes from HDB objects 
+   * @return the rendered side panel
+   */
   getSidePanel({ closeSidePanel, popCache }) {
     const formatPrice = (price) => {
       return Number(price).toLocaleString();
@@ -104,8 +147,6 @@ class Hdb {
     return (
       <div className={`sidebar ${"open"}`}>
         <div className="sidebar-header">
-          {/* Consider making this dynamic if you have images for each property */}
-          {/*<img src="block426.jpeg" alt="Property" />*/}
           <button className="close-btn" onClick={() => {}}></button>
           <button
             className="close-btn"

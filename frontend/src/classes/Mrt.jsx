@@ -2,8 +2,11 @@ import { Marker } from "react-map-gl/dist/esm/exports-maplibre";
 import { FaTrain } from "react-icons/fa6";
 import { IoArrowBackSharp } from "react-icons/io5";
 
-const primaryColor = "green";
 
+/**
+ * Inline sytlings for MRT icon
+ */
+const primaryColor = "green";
 const styles = {
   iconContainer: {
     display: "flex",
@@ -19,12 +22,27 @@ const styles = {
   },
 };
 
+/** 
+ * Models a MRT station object using data from data.gov.sg
+ *
+ * @class MRT 
+ * @classdesc supports getters, rendering of side panel and marker
+  */
 class Mrt {
+  /**
+   * constructor for MRT station object
+   *
+  * @constructs a MRT station object
+  * @param name of MRT station
+  * @param latitude of MRT station
+  * @param longitude of MRT station
+  */
   constructor(name, latitude, longitude) {
     this.name = name;
     this.latitude = latitude;
     this.longitude = longitude;
   }
+
   getMrtName() {
     return this.name;
   }
@@ -37,6 +55,15 @@ class Mrt {
     return this.longitude;
   }
 
+
+  /**
+   * Returns <Marker /> component initialised with the MRT station's coordinates 
+   * and icon.
+   *
+   * @param {function} pushCache 
+   * @return <Marker /> from maplibre 
+   *
+   */
   getMapIconMRT({ pushCache }) {
     return (
       <Marker
@@ -56,6 +83,15 @@ class Mrt {
     );
   }
 
+
+ /**
+   * Renders side panel by creating <div> and <p> elements
+   *
+   * @param {function} closeSidePanel
+   * @para {function} popCache
+   * @description loads relevant attributes from MRT station objects 
+   * @return the rendered side panel
+   */
   getSidePanel({ closeSidePanel, popCache }) {
     return (
       <div className={`sidebar ${"open"}`}>
