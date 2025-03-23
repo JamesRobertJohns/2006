@@ -1,15 +1,10 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Map } from "react-map-gl/maplibre";
-import { 
-  useState, 
-  useEffect, 
-  useMemo, 
-  useRef,
-  useContext
-} from "react";
+import { useState, useEffect, useMemo, useRef, useContext } from "react";
 
 import TrafficCamera from "./classes/TrafficCamera.jsx";
 import Hdb from "./classes/Hdb.jsx";
+import Dengue from "./classes/Dengue.jsx";
 import Switch from "@mui/material/Switch";
 import Mrt from "./classes/Mrt.jsx";
 import School from "./classes/School.jsx";
@@ -39,6 +34,25 @@ const fetchTrafficCameras = async (setTrafficCameras) => {
       });
       setTrafficCameras(trafficCameras);
     }
+  } catch (error) {
+    console.error("Error fetching:", error);
+  }
+};
+
+const fetchDengue = async (setDengue) => {
+  try {
+    const response = await fetch("./dengue.json");
+    const data = await response.json();
+    const dengues = data.map((item) => {
+      const dengue = new Dengue(
+        item.properties.OBJECTID,
+        item.latitude,
+        item.longitude,
+        item.properties.CASE_SIZE
+      );
+      return dengue;
+    });
+    setDengue(dengues);
   } catch (error) {
     console.error("Error fetching:", error);
   }
@@ -99,16 +113,19 @@ const fetchSchool = async (setSchool) => {
 function DynamicMap() {
   const { filteredHdbs, setFilteredHdbs } = useContext(HDBContext);
   const [trafficCameras, setTrafficCameras] = useState([]);
+  const [dengues, setDengues] = useState([]);
   const [MRTs, setMRTs] = useState([]);
   const [Schools, setSchools] = useState([]);
 
   const [displayTrafficCameras, setDisplayTrafficCameras] = useState([]);
+  const [displayDengue, setDisplayDengue] = useState([]);
   const [displayHdbs, setDisplayHdbs] = useState([]);
   const [displayMRTs, setDisplayMRTs] = useState([]);
   const [displaySchools, setDisplaySchools] = useState([]);
 
   const [showHdb, setShowHdb] = useState(true);
   const [showTrafficCamera, setShowTrafficCamera] = useState(true);
+  const [showDengue, setShowDengue] = useState(true);
   const [showMRT, setShowMRT] = useState(true);
   const [showSchool, setShowSchool] = useState(true);
 
@@ -136,6 +153,7 @@ function DynamicMap() {
   const setActiveHdb = (element) => {
     pushCache(element);
     setDisplayTrafficCameras(getNearestNLocations(trafficCameras, element, 5));
+    setDisplayDengue(getNearestNLocations(dengues, element, 3));
     setDisplayMRTs(getNearestNLocations(MRTs, element, 1));
     setDisplaySchools(getNearestNLocations(Schools, element, 3));
     setDisplayHdbs([element]);
@@ -147,16 +165,16 @@ function DynamicMap() {
   const closeSidePanel = () => {
     clearCache();
     setDisplayTrafficCameras([]);
+    setDisplayDengue([]);
     setDisplayHdbs(filteredHdbs);
     setDisplayMRTs([]);
     setDisplaySchools([]);
-    resetFlyToLocation();
   };
 
   /**
    * Calculates Euclidean Distance between two positions
-   * 
-   * @param obj - a valid class object 
+   *
+   * @param obj - a valid class object
    * @param target - a valid class boject
    * @return the euclidean distnace
    */
@@ -183,7 +201,7 @@ function DynamicMap() {
       .slice(0, n);
   };
 
-   /* 
+  /*
    * Call maplibre method flyTo on interaction with Marker by
    * zooming on that location.
    *
@@ -196,21 +214,6 @@ function DynamicMap() {
         center: [longitude, latitude],
         zoom: 13.5,
         speed: 0.25,
-        curve: 2.5,
-      });
-    }
-  };
-
-  /**
-   * Reset map view to initial zoom
-   */
-  const resetFlyToLocation = () => {
-    if (mapRef.current) {
-      mapRef.current.flyTo({
-        center: [initialLongitude, initialLatitude],
-        zoom: initialZoom,
-        speed: 0.5,
-        curve: 1,
       });
     }
   };
@@ -220,16 +223,17 @@ function DynamicMap() {
    */
   useEffect(() => {
     fetchTrafficCameras(setTrafficCameras);
+    fetchDengue(setDengues);
     fetchMrt(setMRTs);
     fetchSchool(setSchools);
   }, []);
 
   /**
-   * On Change of filteredHDB arrays, 
+   * On Change of filteredHDB arrays,
    * set DisplayHdbsarray
    */
   useEffect(() => {
-      setDisplayHdbs(filteredHdbs);
+    setDisplayHdbs(filteredHdbs);
   }, [filteredHdbs]);
 
   /**
@@ -243,7 +247,6 @@ function DynamicMap() {
       flyToLocation(activeElement.latitude, activeElement.longitude);
     }
   }, [cache]);
-
 
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
@@ -267,8 +270,11 @@ function DynamicMap() {
           }}
         >
           <div>
-            <Switch defaultChecked onChange={() => setShowHdb(!showHdb)} />
-            <span>Display HDB</span>
+            <Switch
+              defaultChecked
+              onChange={() => setShowDengue(!showDengue)}
+            />
+            <span>Display Dengue</span>
           </div>
           <div>
             <Switch
@@ -301,14 +307,17 @@ function DynamicMap() {
           zoom: initialZoom,
         }}
       >
-
         <MapControl />
-      
-        {/* Toggle Display of Traffic Camera Markers and iterates through displayTrafficCamera array to set Marker*/}
+
+        {/* Toggle Display of Dengue Markers and iterates through displayTrafficCamera array to set Marker*/}
         {showTrafficCamera &&
           displayTrafficCameras.map((trafficCamera) =>
             trafficCamera.getMapIcon({ pushCache })
           )}
+
+        {/* Toggle Display of Traffic Camera Markers and iterates through displayTrafficCamera array to set Marker*/}
+        {showDengue &&
+          displayDengue.map((dengue) => dengue.getMapIcon({ pushCache }))}
 
         {/* Toggle Display of MRT station Markers and iterates through displayMRT array to set Marker*/}
         {showMRT && displayMRTs.map((MRT) => MRT.getMapIconMRT({ pushCache }))}
@@ -319,10 +328,8 @@ function DynamicMap() {
             School.getSchoolMapIcon({ pushCache })
           )}
 
-
-         {/* Toggle Display of HDB Markers and iterates through displayHdbs array to set Marker*/}
+        {/* Toggle Display of HDB Markers and iterates through displayHdbs array to set Marker*/}
         {showHdb && displayHdbs.map((hdb) => hdb.getMapIcon({ setActiveHdb }))}
-
       </Map>
     </div>
   );
