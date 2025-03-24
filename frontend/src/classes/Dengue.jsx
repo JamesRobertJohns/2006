@@ -2,7 +2,7 @@ import "./Sidebar.css";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { FaMosquito } from "react-icons/fa6";
 import { Marker } from "react-map-gl/maplibre";
-
+import UrbanDataObject from "./UrbanDataObject.jsx";
 /**
  * inline styling for Dengue icon
  */
@@ -28,7 +28,7 @@ const styles = {
  * @class Dengue
  * @classdesc supports setters and getters, and rendering of marker
  */
-class Dengue {
+class Dengue extends UrbanDataObject {
   /**
    * Constructs a Dengue object by initialisng relevant attributes.
    *
@@ -39,20 +39,10 @@ class Dengue {
    * * @param {string} caseSize
    */
   constructor(id, latitude, longitude, caseSize) {
+    super(longitude, latitude);
     this.id = id;
-    this.latitude = latitude;
-    this.longitude = longitude;
     this.caseSize = caseSize;
   }
-
-  getLatitude() {
-    return this.latitude;
-  }
-
-  getLongitude() {
-    return this.longitude;
-  }
-
   /**
    * Returns <Marker /> component initialised with the Dengue's coordinate
    * and icon.
@@ -63,8 +53,8 @@ class Dengue {
   getMapIcon({ pushCache }) {
     return (
       <Marker
-        latitude={this.latitude}
-        longitude={this.longitude}
+        latitude={this.getLatitude()}
+        longitude={this.getLongitude()}
         key={this.id}
         cursor="pointer"
         onClick={(e) => {

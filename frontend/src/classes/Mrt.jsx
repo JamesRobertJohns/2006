@@ -1,7 +1,7 @@
 import { Marker } from "react-map-gl/dist/esm/exports-maplibre";
 import { FaTrain } from "react-icons/fa6";
 import { IoArrowBackSharp } from "react-icons/io5";
-
+import UrbanDataObject from "./UrbanDataObject.jsx";
 
 /**
  * Inline sytlings for MRT icon
@@ -22,54 +22,44 @@ const styles = {
   },
 };
 
-/** 
+/**
  * Models a MRT station object using data from data.gov.sg
  *
- * @class MRT 
+ * @class MRT
  * @classdesc supports getters, rendering of side panel and marker
-  */
-class Mrt {
+ */
+class Mrt extends UrbanDataObject {
   /**
    * constructor for MRT station object
    *
-  * @constructs a MRT station object
-  * @param name of MRT station
-  * @param latitude of MRT station
-  * @param longitude of MRT station
-  */
+   * @constructs a MRT station object
+   * @param name of MRT station
+   * @param latitude of MRT station
+   * @param longitude of MRT station
+   */
   constructor(name, latitude, longitude) {
+    super(longitude, latitude);
     this.name = name;
-    this.latitude = latitude;
-    this.longitude = longitude;
   }
 
   getMrtName() {
     return this.name;
   }
 
-  getLatitude() {
-    return this.latitude;
-  }
-
-  getLongitude() {
-    return this.longitude;
-  }
-
-
   /**
-   * Returns <Marker /> component initialised with the MRT station's coordinates 
+   * Returns <Marker /> component initialised with the MRT station's coordinates
    * and icon.
    *
-   * @param {function} pushCache 
-   * @return <Marker /> from maplibre 
+   * @param {function} pushCache
+   * @return <Marker /> from maplibre
    *
    */
   getMapIconMRT({ pushCache }) {
     return (
       <Marker
         name={this.name}
-        latitude={this.latitude}
-        longitude={this.longitude}
+        latitude={this.getLatitude()}
+        longitude={this.getLongitude()}
         cursor="pointer"
         onClick={(e) => {
           e.originalEvent.stopPropagation();
@@ -83,13 +73,12 @@ class Mrt {
     );
   }
 
-
- /**
+  /**
    * Renders side panel by creating <div> and <p> elements
    *
    * @param {function} closeSidePanel
    * @para {function} popCache
-   * @description loads relevant attributes from MRT station objects 
+   * @description loads relevant attributes from MRT station objects
    * @return the rendered side panel
    */
   getSidePanel({ closeSidePanel, popCache }) {

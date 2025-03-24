@@ -3,7 +3,7 @@ import { IoArrowBackSharp } from "react-icons/io5";
 import { IoTimerSharp } from "react-icons/io5";
 import { Marker } from "react-map-gl/maplibre";
 import { PiSecurityCameraBold } from "react-icons/pi";
-
+import UrbanDataObject from "./UrbanDataObject.jsx";
 
 /**
  * Inline styling for Traffic Camera icons
@@ -25,14 +25,13 @@ const styles = {
   },
 };
 
-
-/** 
+/**
  * Models a Traffic Camera object using data from data.gov.sg
  *
- * @class TrafficCamera 
+ * @class TrafficCamera
  * @classdesc supports getters, rendering of side panel and marker
-  */
-class TrafficCamera {
+ */
+class TrafficCamera extends UrbanDataObject {
   /**
    * constructor for Traffic Camera object
    *
@@ -45,10 +44,9 @@ class TrafficCamera {
 
   */
   constructor(id, url, latitude, longitude, timestamp) {
+    super(longitude, latitude);
     this.id = id;
     this.url = url;
-    this.latitude = latitude;
-    this.longitude = longitude;
     this.timestamp = timestamp;
   }
 
@@ -56,29 +54,20 @@ class TrafficCamera {
     return this.url;
   }
 
-  getLatitude() {
-    return this.latitude;
-  }
-
-  getLongitude() {
-    return this.longitude;
-  }
-
-  
   /**
-   * Returns <Marker /> component initialised with the traffic camera's coordinates 
+   * Returns <Marker /> component initialised with the traffic camera's coordinates
    * and icon.
    *
-   * @param {function} pushCache 
-   * @return <Marker /> from maplibre 
+   * @param {function} pushCache
+   * @return <Marker /> from maplibre
    *
    */
   getMapIcon({ pushCache }) {
     return (
       <Marker
         key={this.id}
-        latitude={this.latitude}
-        longitude={this.longitude}
+        latitude={this.getLatitude()}
+        longitude={this.getLongitude()}
         onClick={() => {
           pushCache(this);
         }}
@@ -99,7 +88,7 @@ class TrafficCamera {
    *
    * @param {function} closeSidePanel
    * @para {function} popCache
-   * @description loads relevant attributes from Traffic Camera objects 
+   * @description loads relevant attributes from Traffic Camera objects
    * @return the rendered side panel
    */
   getSidePanel({ closeSidePanel, popCache }) {

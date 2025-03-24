@@ -7,6 +7,7 @@ import { FaRestroom } from "react-icons/fa";
 import { BsHouse } from "react-icons/bs";
 import { Marker } from "react-map-gl/maplibre";
 import { FaHome } from "react-icons/fa";
+import UrbanDataObject from "./UrbanDataObject.jsx";
 const primaryColor = "#2D4059";
 
 /**
@@ -27,14 +28,13 @@ const styles = {
   },
 };
 
-
 /**
  * Abstraction for an HDB object using attributes from data.gov.sg
  *
  * @class Hdb
  * @classdesc supports setters and getters, and rendering of marker
  */
-class Hdb {
+class Hdb extends UrbanDataObject {
   /**
    * Constructs a HDB object by initialisng relevant attributes.
    *
@@ -69,6 +69,8 @@ class Hdb {
     latitude,
     longitude
   ) {
+    super(longitude, latitude);
+
     this.month = month;
     this.town = town;
     this.flat_type = flat_type;
@@ -81,8 +83,6 @@ class Hdb {
     this.remaining_lease = remaining_lease;
     this.resale_price = resale_price;
     this.address = address;
-    this.latitude = latitude;
-    this.longitude = longitude;
   }
 
   getFlatType() {
@@ -96,27 +96,18 @@ class Hdb {
   getPrice() {
     return this.resale_price;
   }
-
-  getLatitude() {
-    return this.latitude;
-  }
-
-  getLongitude() {
-    return this.longitude;
-  }
-
   /**
    * Returns <Marker /> component initialised with the HDB flat's coordinate
    * and icon.
    *
    * @param {function} setActiveHdb, from useState()
-   * @return <Marker /> from maplibre 
+   * @return <Marker /> from maplibre
    */
   getMapIcon({ setActiveHdb }) {
     return (
       <Marker
-        latitude={this.latitude}
-        longitude={this.longitude}
+        latitude={this.getLatitude()}
+        longitude={this.getLongitude()}
         key={`marker-${this.key}`}
         cursor="pointer"
         onClick={(e) => {
@@ -136,7 +127,7 @@ class Hdb {
    *
    * @param {function} closeSidePanel
    * @para {function} popCache
-   * @description loads relevant attributes from HDB objects 
+   * @description loads relevant attributes from HDB objects
    * @return the rendered side panel
    */
   getSidePanel({ closeSidePanel, popCache }) {
