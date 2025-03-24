@@ -1,6 +1,7 @@
 svg path {
     stroke-width: 2;
     transition: stroke 0.3s ease-in-out;
+    stroke:gray ;
 }
 
 /* Hover function probs can remove ngl */
