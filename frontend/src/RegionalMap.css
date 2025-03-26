@@ -17,3 +17,17 @@ svg path {
 #SG-03 { fill: #FF6347; } /* North West*/
 #SG-04 { fill: #FFD700; } /* South East*/
 #SG-05 { fill: #FF69B4; } /* South West*/
+
+.regional-map path.region-selected {
+    fill-opacity: 1;
+    stroke: black;
+    stroke-width: 2;
+    filter: none;
+}
+
+.regional-map path.region-unselected {
+    fill-opacity: 0.4;
+    filter: grayscale(70%);
+    stroke: gray;
+    stroke-width: 1;
+}

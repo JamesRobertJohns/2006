@@ -23,18 +23,25 @@ const RegionalMap = ({ selectedRegion }) => {
       xmlns="http://www.w3.org/2000/svg" 
       width="900" 
       height="500"
-    >
-      {filteredRegions.map((region) => (
+      className="regional-map"
+      >
+      {regions.map((region) => (
         <path
           key={region.id}
           d={region.d}
           title={region.title}
           id={region.id}
+          className={
+            selectedRegion 
+              ? selectedRegion === region.id 
+                ? "region-selected" 
+                : "region-unselected"
+              : ""
+          }
           onClick={() => handleRegionClick(region.id)}
         />
       ))}
     </svg>
   );
 };
-
 export default RegionalMap;

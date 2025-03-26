@@ -12,8 +12,12 @@
 
 .filter-button:hover {
   cursor: pointer;  
-  background: #a9a9a9; 
+  background: rgb(20, 10, 74); 
+  transform: translate(-8px);
+  color:white;
+  font-weight: 700;
 }
+
 
 .filter-bar-box {
   display: flex;
