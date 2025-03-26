@@ -1,22 +1,35 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState,  useEffect, useContext } from 'react';
 import Filter from "./Filter/Filter.jsx";
 import { useNavigate } from "react-router-dom";
 import Hdb from "./classes/Hdb.jsx";
 import TownToRegionMap from "./TownToRegion.json";
+import DynamicMap from "./DynamicMap.jsx"; 
+import HDBContext from "./HDBContext.jsx";
 
-function FilterBar() {
 
+/**
+  * Function that handles filtering logic, dynamically updates number of flats available
+  * @return Filter Buttons, Find Button, Count of HDB Flats
+ * @author: Jia Yang
+ *
+ */
+function FilterSystem() {
+  const { filteredHdbs, setFilteredHdbs } = useContext(HDBContext);
   const [allHdbs, setAllHdbs] = useState([]); 
-  const [filteredHdbs, setFilteredHdbs] = useState([]); 
 
-
+  /**
+   * Load all HDB objects into array allHdbs, filteredHdbs.
+   * @construct a hdb object using its constructor
+   * @pre hdb.json must have valid data
+   * @throws error if pre-condition is not satisified
+   */
   useEffect(() => {
     const fetchHdbs = async () => {
       try {
         const response = await fetch("./hdb.json");
         const data = await response.json();
-        const hdbs = data.map((item) => {
-          return new Hdb(
+        const hdbs = data.map((item, index) => {
+          const hdb = new Hdb(
             item.month,
             item.town,
             item.flat_type,
@@ -32,6 +45,8 @@ function FilterBar() {
             item.latitude,
             item.longitude
           );
+          hdb.key = `${index}`;
+          return hdb;
         });
         setAllHdbs(hdbs); 
         setFilteredHdbs(hdbs); 
@@ -47,6 +62,9 @@ function FilterBar() {
     navigate('\map');
   };
 
+  /**
+   * Specify the list of options for filter option Region
+   */
   const regionList = [
     "Central", 
     "East", 
@@ -55,6 +73,9 @@ function FilterBar() {
     "West"
   ];
 
+  /**
+   * Specify the list of options for filter option Flat Type
+   */
   const roomTypeList = [
     "2 Room", 
     "3 Room", 
@@ -63,6 +84,9 @@ function FilterBar() {
     "Executive"
   ];
 
+  /**
+   * Specify the list of option for filter option Price Range
+   */
   const priceRangeList = [
     "199,999 and below",
     "200,000 - 299,999", 
@@ -76,6 +100,9 @@ function FilterBar() {
     "1,000,000 and above",
   ];
 
+  /**
+   * Specify the list of option for filter option Lease Life
+   */
   const leaseLifeList = [
     "40 - 49",
     "50 - 59",
@@ -85,8 +112,12 @@ function FilterBar() {
     "90 - 99",
   ];
 
-  // the filters are set to display default OptionName
-  // if the values are set to NULL
+
+  /**
+   * Intialise selected array to have key value pair of (options, NULL).
+   * When the options' values are NULL, the <select /> is set to display the option name.
+   * @see './Filter/Filter.jsx'
+   */
   const [selected, setSelected] = useState({
     region: "",
     priceRange: "",
@@ -95,7 +126,12 @@ function FilterBar() {
   });
 
 
-  // updates the key value pair
+  /**
+   * handles changes on select of filter option, update selected option.
+   *
+   * @param {string} filter - key of selected array
+   * @param {string} option - value of selected arary
+   */
   const handleSelectChange = (filter, option) => {
     setSelected((s) => ({
       ...s,
@@ -103,38 +139,53 @@ function FilterBar() {
     }));
   };
 
-  // so long as it contains empty string, then
-  // not all options are selected
+  /**
+   * Checks if all options are selected by checking if any value is NULL
+   * @return {bool} whether all options is selected
+   */
   const isAllSelected = !Object.values(selected).includes("");
 
-
+ 
   /**
-   * filter logic using memoization
+   * Filters the HDB flats based on the options passed, updates the filteredHdbs array.
    *
-   * hdb.town should be in uppercase, see json
-   * im not sure if i captured all the towns 
-   * in any case uncaptured towns will be empty
-   *
-   * dependency list only have selected options array
-   * our hdb json is static
-   *
-   * similarly, flatType from json are all upper case
-   *
-   * filtering of lease life will only use the years
-   * i.e. round down to year, discard months
-  */
-  useMemo(() => {
+   * @pre allHdbs array is initialised
+   * @post updated filteredHdbs array
+   * @see `classes/Hdb.jsx` 
+   * @author Jia Yang
+   */
+  useEffect(() => {
     let filtered = allHdbs;
 
+    /** 
+     * Filters HDB flats to the corresponding regioins.
+     * 
+     * There is no attribute region in HDB object since the '.csv' file fetched
+     * from gov.data.sg does not contain such information. However, HDB objects
+     * contain attribute town. We used a '.json' file to store the
+     * corresponding key value pair (town, region) and index it O(1). 
+     *
+     * @see 'TownToRegion.json' for the data file declared 
+     * @return {bool} if the region of HDB is equals to the selected region
+     */
     if (selected.region) {
       filtered = filtered.filter(
         (hdb) => {
-          const region = TownToRegionMap[hdb.town] || "";
+          const region = TownToRegionMap[hdb.town.toUpperCase()] || "";
           return region === selected.region;
         }
       );
     }
 
+
+   /**
+    * Filters HDB flats to the corresponding Flat Types.
+    *
+    * Calls the getFlatType() method in HDB objects and do a comparison.
+    *
+    * @return {bool} if the flat type of the HDB is equals to the selected flat
+    * type
+    */
     if (selected.roomType) {
       filtered = filtered.filter(
         (hdb) => {
@@ -145,8 +196,14 @@ function FilterBar() {
     }
 
     /**
-     * e.g.
-     * 40 - 49
+     * Filters the HDB flats to the corresponding remaining lease life range.
+     *
+     * LeaseLife are passed as "xx - xx", where x dentoes a valid integer.
+     * Therefore a simple string processing is done to get the lower and upper
+     * bound.
+     *
+     * @return {bool} if the range of the lease life of the flats is within the
+     * selected bound.
      */
     if (selected.leaseLife) {
       let lowerbound = Number(selected.leaseLife.split(" ")[0]);
@@ -159,33 +216,33 @@ function FilterBar() {
       );
     }
 
-   /**
-    * e.g.
-    * 200,000 - 210,000
-    * two extreme options
-    * 199,999 and below
-    * 1,000,000 and above
-    * there shouldnt be many people requiring them
-    * troublesome to separate until so granular
+    /**
+    * Filters the HDB Flats to the corresponding resale price range.
     *
-    * note that in json reslae price is in XXXX.0
+    * Price Range could be of the following format: 
+    * 1) int and below 
+    * 2) int and above 
+    * 3) int - int
     *
+    * Therefore, the string processing technique is adjusted accordingly.
+    *
+    * @return {bool} if the price range of the HDB flat is within the lower and
+    * upper bound
     */
-
     if (selected.priceRange) {
       let lowerbound = Number(selected.priceRange.split(" ")[0].replace(/,/g, ""));
       let upperbound = selected.priceRange.split(" ")[2];
       if (upperbound === "below") {
         filtered = filtered.filter(
           (hdb) => {
-           return Number(hdb.getPrice()) <= lowerbound; 
+            return Number(hdb.getPrice()) <= lowerbound; 
           }
         );
       }
       else if (upperbound === "above") {
         filtered = filtered.filter(
           (hdb) => {
-             return Number(hdb.getPrice()) >= lowerbound; 
+            return Number(hdb.getPrice()) >= lowerbound; 
           }
         );
       }
@@ -200,9 +257,8 @@ function FilterBar() {
 
       }
     }
-
     setFilteredHdbs(filtered);
-  }, [selected]);
+  }, [selected, allHdbs]);
 
   return (
     <>
@@ -251,10 +307,8 @@ function FilterBar() {
           Find 
         </button>
       </div>
-
-
     </>
   );
 }
 
-export default FilterBar;
+export default FilterSystem;

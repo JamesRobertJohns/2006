@@ -3,6 +3,11 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 
+/** 
+ * Boostraps header component with navigation 
+ *
+ * @author Jia Yang
+  */
 function Header() {
   return (
     <>
@@ -10,7 +15,6 @@ function Header() {
         <Container>
           <Navbar.Brand href="#home">HDBuddy</Navbar.Brand>
           <Nav className="me-auto">
-            <Nav.Link href="#home">About</Nav.Link>
             <Nav.Link href="/tutorial">Tutorial</Nav.Link>
             <Nav.Link href="/map">Map</Nav.Link>
           </Nav>
