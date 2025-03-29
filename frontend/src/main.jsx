@@ -9,6 +9,7 @@ import DynamicMap from "./DynamicMap.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
 import TutorialPage from "./pages/TutorialPage.jsx";
+import StatsByRegionPage from "./pages/StatsByRegionPage.jsx";
 import HDBProvider from "./HDBProvider.jsx";  
 
 
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
   {
     path: '/tutorial',
     element: <TutorialPage />,
+  },
+  {
+    path: '/regionstats',
+    element: <StatsByRegionPage />,
   },
 ]);
 
