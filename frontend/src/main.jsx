@@ -13,6 +13,13 @@ import StatsByRegionPage from "./pages/StatsByRegionPage.jsx";
 import HDBProvider from "./HDBProvider.jsx";  
 
 
+const HDBLayout = ({ children }) => (
+  <HDBProvider>
+    {children}
+  </HDBProvider>
+);
+
+
 /**
  * Sets up client-side routing for the application with route definitions
  * for the landing page, dynamic map, and tutorial page.
@@ -20,12 +27,20 @@ import HDBProvider from "./HDBProvider.jsx";
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <LandingPage />,
+    element: (
+      <HDBLayout>
+        <LandingPage />
+      </HDBLayout>
+    ),
     errorElement: <NotFoundPage />,
   },
   {
     path: '/map',
-    element: <DynamicMap />,
+    element: (
+      <HDBLayout>
+        <DynamicMap />
+      </HDBLayout>
+    ),
   },
   {
     path: '/tutorial',
@@ -42,8 +57,9 @@ const router = createBrowserRouter([
  * for filtered HDB data across all routes.
  * 
  * @author Jia Yang
- */ReactDOM.createRoot(document.getElementById("root")).render(
-  <HDBProvider>
-    <RouterProvider router={router} />
-  </HDBProvider>
+ */
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <RouterProvider router={router} />
 );
+

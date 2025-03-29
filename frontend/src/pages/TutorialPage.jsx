@@ -1,15 +1,18 @@
+import Header from "../Header.jsx";
+
 
 /** Renders Tutorial Page
   *
   */
 function TutorialPage() {
   return (
-    <div>
+    <>
+      <Header />
       <h1>Tutorial Page</h1>
       <ul>
         <li>to include tutorial</li>
       </ul>
-    </div>
+    </>
   );
 }
 
