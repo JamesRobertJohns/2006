@@ -13,7 +13,7 @@ function Header() {
     <>
       <Navbar bg="dark" data-bs-theme="dark" fixed="top">
         <Container>
-          <Navbar.Brand href="#home">HDBuddy</Navbar.Brand>
+          <Navbar.Brand href="/">HDBuddy</Navbar.Brand>
           <Nav className="me-auto">
             <Nav.Link href="/tutorial">Tutorial</Nav.Link>
             <Nav.Link href="/map">Map</Nav.Link>

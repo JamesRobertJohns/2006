@@ -1,11 +1,12 @@
-import { useState,  useEffect, useContext } from 'react';
+import { useState, useMemo, useEffect, useContext } from 'react';
 import Filter from "./Filter/Filter.jsx";
 import { useNavigate } from "react-router-dom";
 import Hdb from "./classes/Hdb.jsx";
 import TownToRegionMap from "./TownToRegion.json";
 import DynamicMap from "./DynamicMap.jsx"; 
 import HDBContext from "./HDBContext.jsx";
-
+import RegionalMap from './RegionalMap.jsx';
+import "./FilterSystem.css";
 
 /**
   * Function that handles filtering logic, dynamically updates number of flats available
@@ -259,56 +260,66 @@ function FilterSystem() {
     }
     setFilteredHdbs(filtered);
   }, [selected, allHdbs]);
+  
+const regionToIdMap = {
+  "Central": "SG-01",
+  "East": "SG-04",
+  "North": "SG-02",
+  "North-East": "SG-03",
+  "West": "SG-05",
+};
+const selectedRegionId = regionToIdMap[selected.region] || "";
+return (
+  <>
+    <div className='filter-bar-box'>
 
-  return (
-    <>
-      <div className='filter-bar-box'>
+      <Filter 
+        optionName="Region" 
+        optionList={regionList} 
+        option={selected.region}
+        onChange={(value) => handleSelectChange("region", value)}
+      />
 
-        <Filter 
-          optionName="Region" 
-          optionList={regionList} 
-          option={selected.region}
-          onChange={(value) => handleSelectChange("region", value)}
-        />
+      <Filter 
+        optionName="Price Range (S$)" optionList={priceRangeList}
+        option={selected.priceRange}
+        onChange={(value) => handleSelectChange("priceRange", value)}
+      />
 
-        <Filter 
-          optionName="Price Range (S$)" optionList={priceRangeList}
-          option={selected.priceRange}
-          onChange={(value) => handleSelectChange("priceRange", value)}
-        />
+      <Filter 
+        optionName="Flat Type" 
+        optionList={roomTypeList}
+        option={selected.roomType}
+        onChange={(value) => handleSelectChange("roomType", value)}
+      />
 
-        <Filter 
-          optionName="Flat Type" 
-          optionList={roomTypeList}
-          option={selected.roomType}
-          onChange={(value) => handleSelectChange("roomType", value)}
-        />
+      <Filter 
+        optionName="Lease Life (Yr)" 
+        optionList={leaseLifeList}
+        option={selected.leaseLife}
+        onChange={(value) => handleSelectChange("leaseLife", value)}
+      />
+</div>
 
-        <Filter 
-          optionName="Lease Life (Yr)" 
-          optionList={leaseLifeList}
-          option={selected.leaseLife}
-          onChange={(value) => handleSelectChange("leaseLife", value)}
-        />
+<div className='map-container'>
+<RegionalMap selectedRegion={selectedRegionId} />
+<div className='flats-available-overlay'>
+  <h1>{filteredHdbs.length.toLocaleString()}</h1>
+  <p>Flats Available</p>
+</div>
+</div>
 
-      </div>
-
-      <div className='house-count'>
-        <h1>{filteredHdbs.length.toLocaleString()}</h1>
-        <p>Flats Available</p>
-      </div>
-
-      <div className='search-button-box'>
-        <button 
-          className={`button ${isAllSelected? 'active':'disabled'}`}
-          onClick={handleSearch}
-          disabled={!isAllSelected}
-        >
-          Find 
-        </button>
-      </div>
-    </>
-  );
+<div className='search-button-box'>
+<button 
+  className={`button ${isAllSelected? 'active':'disabled'}`}
+  onClick={handleSearch}
+  disabled={!isAllSelected}
+>
+  Find 
+</button>
+</div>
+</>
+);
 }
 
 export default FilterSystem;
