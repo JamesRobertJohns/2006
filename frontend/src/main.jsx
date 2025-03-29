@@ -9,7 +9,15 @@ import DynamicMap from "./DynamicMap.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
 import TutorialPage from "./pages/TutorialPage.jsx";
+import StatsByRegionPage from "./pages/StatsByRegionPage.jsx";
 import HDBProvider from "./HDBProvider.jsx";  
+
+
+const HDBLayout = ({ children }) => (
+  <HDBProvider>
+    {children}
+  </HDBProvider>
+);
 
 
 /**
@@ -19,16 +27,28 @@ import HDBProvider from "./HDBProvider.jsx";
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <LandingPage />,
+    element: (
+      <HDBLayout>
+        <LandingPage />
+      </HDBLayout>
+    ),
     errorElement: <NotFoundPage />,
   },
   {
     path: '/map',
-    element: <DynamicMap />,
+    element: (
+      <HDBLayout>
+        <DynamicMap />
+      </HDBLayout>
+    ),
   },
   {
     path: '/tutorial',
     element: <TutorialPage />,
+  },
+  {
+    path: '/overview',
+    element: <StatsByRegionPage />,
   },
 ]);
 
@@ -37,8 +57,9 @@ const router = createBrowserRouter([
  * for filtered HDB data across all routes.
  * 
  * @author Jia Yang
- */ReactDOM.createRoot(document.getElementById("root")).render(
-  <HDBProvider>
-    <RouterProvider router={router} />
-  </HDBProvider>
+ */
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <RouterProvider router={router} />
 );
+

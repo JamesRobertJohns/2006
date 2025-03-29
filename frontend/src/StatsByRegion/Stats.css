@@ -1,0 +1,25 @@
+.room-type-button-container {
+  margin: 5.5em auto 1.5em auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.room-type-button-container button {
+  background-color: #3b82f6; 
+  color: white; 
+  font-weight: bold; 
+  padding: 0.5rem 1rem; 
+  border-radius: 9999px;
+  border: none;
+  transition: background-color 0.3s ease; 
+  box-shadow: none;
+  margin: auto 1em auto 1em;
+}
+
+.room-type-button-container button:hover {
+  background-color: #1d4ed8;
+}
+
+
+
