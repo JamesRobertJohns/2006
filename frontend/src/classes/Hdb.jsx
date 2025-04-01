@@ -1,4 +1,6 @@
 import "./Sidebar.css";
+import HousePriceHistogram from "../Graphs/histogram.jsx";
+
 import { IoArrowBackSharp } from "react-icons/io5";
 import { FaMosquito } from "react-icons/fa6";
 import { FaTrainSubway } from "react-icons/fa6";
@@ -83,6 +85,15 @@ class Hdb extends UrbanDataObject {
     this.remaining_lease = remaining_lease;
     this.resale_price = resale_price;
     this.address = address;
+    this.prices = [resale_price];
+  }
+
+  addPrice(newPrice) {
+    if (typeof newPrice === "number" && newPrice > 0) {
+      this.prices.push(newPrice);
+    } else {
+      console.error("Invalid price. Please enter a positive number.");
+    }
   }
 
   getFlatType() {
@@ -150,6 +161,7 @@ class Hdb extends UrbanDataObject {
         </div>
 
         <div className="sidebar-content">
+          <HousePriceHistogram prices={this.prices} />
           <h2 className="rent-price">S${formatPrice(this.resale_price)}</h2>
           <h5 className="property-name">{this.address}</h5>
           <p className="sub-info">Lease hremaining: {this.remaining_lease}</p>
