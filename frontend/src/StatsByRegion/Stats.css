@@ -1,5 +1,15 @@
+.heading {
+  margin: 1.5em auto 1em 0.5em;
+  font-size: 48px;
+  font-weight: 600;
+  background-image: linear-gradient(to left, #553c9a, #b393d3);
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
 .room-type-button-container {
-  margin: 5.5em auto 1.5em auto;
+  margin: 1.5em auto auto auto;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -15,11 +25,13 @@
   transition: background-color 0.3s ease; 
   box-shadow: none;
   margin: auto 1em auto 1em;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .room-type-button-container button:hover {
   background-color: #1d4ed8;
 }
+
 
 
 

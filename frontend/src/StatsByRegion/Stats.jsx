@@ -92,7 +92,12 @@ function Stats() {
       title: {
         text: `Price Distribution for ${room} Flats`,
         align: 'center',
+        style: {
+          fontSize: '32px',
+          color: '#2F3C7E'
+        },
       },
+
       xaxis: {
         categories: Object.keys(dataContainer) 
       },
@@ -115,18 +120,12 @@ function Stats() {
   const handleRoomChange = (room) => {
     setRoom(room);
   };
-  
+
 
   return (
     <>
-      <div className="room-type-button-container">
-        <button onClick={() => handleRoomChange("2 ROOM")}>2 Room</button>
-        <button onClick={() => handleRoomChange("3 ROOM")}>3 Room</button>
-        <button onClick={() => handleRoomChange("4 ROOM")}>4 Room</button>
-        <button onClick={() => handleRoomChange("5 ROOM")}>5 Room</button>
-        <button onClick={() => handleRoomChange("EXECUTIVE")}>Executive</button>
+      <h2 className="heading">Price Distribution of Flats By Region</h2> 
 
-      </div>
       <div className="boxplot">
         <Chart
           options={opt}
@@ -135,6 +134,19 @@ function Stats() {
           height={450}
         />
       </div>
+
+
+      <div className="room-type-button-container">
+        <button onClick={() => handleRoomChange("2 ROOM")}>2 Room</button>
+        <button onClick={() => handleRoomChange("3 ROOM")}>3 Room</button>
+        <button onClick={() => handleRoomChange("4 ROOM")}>4 Room</button>
+        <button onClick={() => handleRoomChange("5 ROOM")}>5 Room</button>
+        <button onClick={() => handleRoomChange("EXECUTIVE")}>Executive</button>
+      </div>
+
+      <h2 className="heading">Flat Type Distribution By Region</h2> 
+
+
     </>
   );
 }export default Stats;
