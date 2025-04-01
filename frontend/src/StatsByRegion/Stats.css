@@ -24,13 +24,21 @@
   border: none;
   transition: background-color 0.3s ease; 
   box-shadow: none;
-  margin: auto 1em auto 1em;
+  margin: 0 1em 2em 1em;
   font-family: 'Montserrat', sans-serif;
 }
 
 .room-type-button-container button:hover {
   background-color: #1d4ed8;
 }
+
+.chart-container {
+  min-height: 100vh; 
+  display: flex;
+  flex-direction: column;
+}
+
+
 
 
 
