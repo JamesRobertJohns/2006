@@ -81,7 +81,7 @@ function Stats() {
       colors: ["#2F3C7E"],
       plotOptions: {
         bar: {
-          borderRadius: 5,
+          borderRadius: 8,
           dataLabels: { position: "top" },
         }
       },
@@ -133,6 +133,7 @@ function Stats() {
     const options = {
       plotOptions: {
         boxPlot: {
+          borderRadius: 8,
           colors: {
             upper: '#2F3C7E',
             lower: '#FBEAEB'
@@ -167,12 +168,14 @@ function Stats() {
     setDataPrice(data);
   }, [room, regions]);
 
-  const handleRoomChange = (room) => {
+  const handleRoomChange = (room, id) => {
+    setActiveb(id);
     setRoom(room);
   };
 
   const [r, setR] = useState("north");
-  const handleRegionChange = (region) => {
+  const handleRegionChange = (region, id) => {
+    setActiveb(id);
     setR(region);
   };
   const [optCount, setOptCount] = useState({});
@@ -186,7 +189,23 @@ function Stats() {
     setDataCount(data);
   }, [r, regions]);
 
+  const [activeb, setActiveb] = useState(null);
 
+  const roomb = [
+    {id: 1, label: "2 ROOM"},
+    {id: 2, label: "3 ROOM"},
+    {id: 3, label: "4 ROOM"},
+    {id: 4, label: "5 ROOM"},
+    {id: 5, label: "EXECUTIVE"}
+  ];
+
+  const flatb = [
+    {id: 6, label: "north"},
+    {id: 7, label: "central"},
+    {id: 8, label: "east"},
+    {id: 9, label: "west"},
+    {id: 10, label: "northEast"}
+  ];
 
   return (
     <>
@@ -201,15 +220,18 @@ function Stats() {
             height={450}
           />
         </div>
-        <div className="room-type-button-container">
-          <button onClick={() => handleRoomChange("2 ROOM")}>2 Room</button>
-          <button onClick={() => handleRoomChange("3 ROOM")}>3 Room</button>
-          <button onClick={() => handleRoomChange("4 ROOM")}>4 Room</button>
-          <button onClick={() => handleRoomChange("5 ROOM")}>5 Room</button>
-          <button onClick={() => handleRoomChange("EXECUTIVE")}>Executive</button>
+        <div className="button-container">
+          {roomb.map((room) => (
+            <button
+              key={room.id}
+              onClick={() => handleRoomChange(room.label, room.id)}
+              className={activeb === room.id ? "clicked" : "button"}
+            >
+              {room.label.toLowerCase()}
+            </button>
+          ))}
         </div>
       </div>
-
 
 
       <div className="chart-container">
@@ -225,16 +247,20 @@ function Stats() {
           />
         </div>
 
-        <div className="room-type-button-container">
-          <button onClick={() => handleRegionChange("north")}>North</button>
-          <button onClick={() => handleRegionChange("central")}>Central</button>
-          <button onClick={() => handleRegionChange("east")}>East</button>
-          <button onClick={() => handleRegionChange("west")}>West</button>
-          <button onClick={() => handleRegionChange("northEast")}>North-East</button>
+        <div className="button-container">
+          {flatb.map((r) => (
+            <button
+              key={r.id}
+              onClick={() => handleRegionChange(r.label, r.id)}
+              className={activeb === r.id ? "clicked" : "button"}
+            >
+              {r.label.toLowerCase()}
+            </button>
+          ))}
         </div>
 
       </div>
 
     </>
   );
-}export default Stats;
+} export default Stats;

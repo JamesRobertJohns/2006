@@ -8,14 +8,14 @@
   -webkit-background-clip: text;
 }
 
-.room-type-button-container {
+.button-container {
   margin: 1.5em auto auto auto;
   display: flex;
   flex-direction: row;
   justify-content: center;
 }
 
-.room-type-button-container button {
+.button-container .button {
   background-color: #3b82f6; 
   color: white; 
   font-weight: bold; 
@@ -28,7 +28,20 @@
   font-family: 'Montserrat', sans-serif;
 }
 
-.room-type-button-container button:hover {
+.button-container .clicked {
+  background-color: #143695;
+  color: white; 
+  font-weight: bold; 
+  padding: 0.5rem 1rem; 
+  border-radius: 9999px;
+  border: none;
+  transition: background-color 0.3s ease; 
+  box-shadow: none;
+  margin: 0 1em 2em 1em;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.button-container .button:hover {
   background-color: #1d4ed8;
 }
 
