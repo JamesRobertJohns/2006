@@ -212,7 +212,7 @@ function DynamicMap() {
     if (mapRef.current) {
       mapRef.current.flyTo({
         center: [longitude, latitude],
-        zoom: 13.5,
+        zoom: mapRef.current.getZoom(),
         speed: 0.25,
       });
     }

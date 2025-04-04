@@ -1,3 +1,4 @@
+
 import React from 'react';
 import './TutorialPage.css';
 import Header from '../Header';
@@ -25,7 +26,6 @@ const TutorialPage = () => {
       description: "Click 'Find' to see your perfect HDB options",
     }
   ];
-
   return (
     <>
     <Header />

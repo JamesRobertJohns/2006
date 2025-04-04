@@ -17,6 +17,7 @@ function Header() {
           <Nav className="me-auto">
             <Nav.Link href="/tutorial">Tutorial</Nav.Link>
             <Nav.Link href="/map">Map</Nav.Link>
+            <Nav.Link href="/overview">Overview</Nav.Link>
           </Nav>
         </Container>
       </Navbar>
