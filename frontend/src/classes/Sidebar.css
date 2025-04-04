@@ -25,6 +25,7 @@
     background-color: #2D4059;
     color: white;
     border-top-right-radius: 10px;
+    font-size: 24px;
   }
   
   .sidebar-header img {
@@ -57,5 +58,16 @@
     align-items: center;
     gap: 8px;
     font-size: 16px;
+  }
+  
+  .list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .list-item {
+    padding: 10px;
+    border: 1px solid #ccc;
   }
   

@@ -1,22 +1,24 @@
+
 import { useState, useMemo, useEffect, useContext } from 'react';
 import Filter from "./Filter/Filter.jsx";
 import { useNavigate } from "react-router-dom";
 import Hdb from "./classes/Hdb.jsx";
 import TownToRegionMap from "./TownToRegion.json";
-import DynamicMap from "./DynamicMap.jsx"; 
+import DynamicMap from "./DynamicMap.jsx";
 import HDBContext from "./HDBContext.jsx";
 import RegionalMap from './RegionalMap.jsx';
 import "./FilterSystem.css";
 
+
 /**
-  * Function that handles filtering logic, dynamically updates number of flats available
-  * @return Filter Buttons, Find Button, Count of HDB Flats
+ * Function that handles filtering logic, dynamically updates number of flats available
+ * @return Filter Buttons, Find Button, Count of HDB Flats
  * @author: Jia Yang
  *
  */
 function FilterSystem() {
   const { filteredHdbs, setFilteredHdbs } = useContext(HDBContext);
-  const [allHdbs, setAllHdbs] = useState([]); 
+  const [allHdbs, setAllHdbs] = useState([]);
 
   /**
    * Load all HDB objects into array allHdbs, filteredHdbs.
@@ -49,8 +51,8 @@ function FilterSystem() {
           hdb.key = `${index}`;
           return hdb;
         });
-        setAllHdbs(hdbs); 
-        setFilteredHdbs(hdbs); 
+        setAllHdbs(hdbs);
+        setFilteredHdbs(hdbs);
       } catch (error) {
         console.error("Error fetching:", error);
       }
@@ -60,42 +62,30 @@ function FilterSystem() {
 
   const navigate = useNavigate();
   const handleSearch = () => {
-    navigate('\map');
+    navigate("map");
   };
 
   /**
    * Specify the list of options for filter option Region
    */
-  const regionList = [
-    "Central", 
-    "East", 
-    "North", 
-    "North-East", 
-    "West"
-  ];
+  const regionList = ["Central", "East", "North", "North-East", "West"];
 
   /**
    * Specify the list of options for filter option Flat Type
    */
-  const roomTypeList = [
-    "2 Room", 
-    "3 Room", 
-    "4 Room", 
-    "5 Room", 
-    "Executive"
-  ];
+  const roomTypeList = ["2 Room", "3 Room", "4 Room", "5 Room", "Executive"];
 
   /**
    * Specify the list of option for filter option Price Range
    */
   const priceRangeList = [
     "199,999 and below",
-    "200,000 - 299,999", 
+    "200,000 - 299,999",
     "300,000 - 399,999",
-    "400,000 - 499,999", 
-    "500,000 - 599,999", 
-    "600,000 - 699,999", 
-    "700,000 - 799,999", 
+    "400,000 - 499,999",
+    "500,000 - 599,999",
+    "600,000 - 699,999",
+    "700,000 - 799,999",
     "800,000 - 899,999",
     "900,000 - 999,999",
     "1,000,000 and above",
@@ -113,7 +103,6 @@ function FilterSystem() {
     "90 - 99",
   ];
 
-
   /**
    * Intialise selected array to have key value pair of (options, NULL).
    * When the options' values are NULL, the <select /> is set to display the option name.
@@ -125,7 +114,6 @@ function FilterSystem() {
     roomType: "",
     leaseLife: "",
   });
-
 
   /**
    * handles changes on select of filter option, update selected option.
@@ -146,36 +134,33 @@ function FilterSystem() {
    */
   const isAllSelected = !Object.values(selected).includes("");
 
-
   /**
    * Filters the HDB flats based on the options passed, updates the filteredHdbs array.
    *
    * @pre allHdbs array is initialised
    * @post updated filteredHdbs array
-   * @see `classes/Hdb.jsx` 
+   * @see `classes/Hdb.jsx`
    * @author Jia Yang
    */
   useEffect(() => {
     let filtered = allHdbs;
 
-    /** 
+    /**
      * Filters HDB flats to the corresponding regioins.
-     * 
+     *
      * There is no attribute region in HDB object since the '.csv' file fetched
      * from gov.data.sg does not contain such information. However, HDB objects
      * contain attribute town. We used a '.json' file to store the
-     * corresponding key value pair (town, region) and index it O(1). 
+     * corresponding key value pair (town, region) and index it O(1).
      *
-     * @see 'TownToRegion.json' for the data file declared 
+     * @see 'TownToRegion.json' for the data file declared
      * @return {bool} if the region of HDB is equals to the selected region
      */
     if (selected.region) {
-      filtered = filtered.filter(
-        (hdb) => {
-          const region = TownToRegionMap[hdb.town.toUpperCase()] || "";
-          return region === selected.region;
-        }
-      );
+      filtered = filtered.filter((hdb) => {
+        const region = TownToRegionMap[hdb.town.toUpperCase()] || "";
+        return region === selected.region;
+      });
     }
 
 
@@ -188,12 +173,10 @@ function FilterSystem() {
     * type
     */
     if (selected.roomType) {
-      filtered = filtered.filter(
-        (hdb) => {
-          const roomType = hdb.getFlatType();
-          return roomType === selected.roomType.toUpperCase();
-        }
-      );
+      filtered = filtered.filter((hdb) => {
+        const roomType = hdb.getFlatType();
+        return roomType === selected.roomType.toUpperCase();
+      });
     }
 
     /**
@@ -209,53 +192,44 @@ function FilterSystem() {
     if (selected.leaseLife) {
       let lowerbound = Number(selected.leaseLife.split(" ")[0]);
       let upperbound = Number(selected.leaseLife.split(" ")[2]);
-      filtered = filtered.filter(
-        (hdb) => {
-          const leaseLife = Number(hdb.getLeaseLife().split(" ")[0]);             
-          return leaseLife >= lowerbound && leaseLife <= upperbound;
-        }
-      );
+      filtered = filtered.filter((hdb) => {
+        const leaseLife = Number(hdb.getLeaseLife().split(" ")[0]);
+        return leaseLife >= lowerbound && leaseLife <= upperbound;
+      });
     }
 
     /**
-    * Filters the HDB Flats to the corresponding resale price range.
-    *
-    * Price Range could be of the following format: 
-    * 1) int and below 
-    * 2) int and above 
-    * 3) int - int
-    *
-    * Therefore, the string processing technique is adjusted accordingly.
-    *
-    * @return {bool} if the price range of the HDB flat is within the lower and
-    * upper bound
-    */
+     * Filters the HDB Flats to the corresponding resale price range.
+     *
+     * Price Range could be of the following format:
+     * 1) int and below
+     * 2) int and above
+     * 3) int - int
+     *
+     * Therefore, the string processing technique is adjusted accordingly.
+     *
+     * @return {bool} if the price range of the HDB flat is within the lower and
+     * upper bound
+     */
     if (selected.priceRange) {
-      let lowerbound = Number(selected.priceRange.split(" ")[0].replace(/,/g, ""));
+      let lowerbound = Number(
+        selected.priceRange.split(" ")[0].replace(/,/g, "")
+      );
       let upperbound = selected.priceRange.split(" ")[2];
       if (upperbound === "below") {
-        filtered = filtered.filter(
-          (hdb) => {
-            return Number(hdb.getPrice()) <= lowerbound; 
-          }
-        );
-      }
-      else if (upperbound === "above") {
-        filtered = filtered.filter(
-          (hdb) => {
-            return Number(hdb.getPrice()) >= lowerbound; 
-          }
-        );
-      }
-      else {
+        filtered = filtered.filter((hdb) => {
+          return Number(hdb.getPrice()) <= lowerbound;
+        });
+      } else if (upperbound === "above") {
+        filtered = filtered.filter((hdb) => {
+          return Number(hdb.getPrice()) >= lowerbound;
+        });
+      } else {
         upperbound = Number(upperbound.replace(/,/g, ""));
-        filtered = filtered.filter(
-          (hdb) => {
-            const price = Number(hdb.getPrice());             
-            return price >= lowerbound && price <= upperbound; 
-          }
-        );
-
+        filtered = filtered.filter((hdb) => {
+          const price = Number(hdb.getPrice());
+          return price >= lowerbound && price <= upperbound;
+        });
       }
     }
     setFilteredHdbs(filtered);
@@ -271,35 +245,36 @@ function FilterSystem() {
   const selectedRegionId = regionToIdMap[selected.region] || "";
   return (
     <>
-      <div className='filter-bar-box'>
-
-        <Filter 
-          optionName="Region" 
-          optionList={regionList} 
+      <div className="filter-bar-box">
+        <Filter
+          optionName="Region"
+          optionList={regionList}
           option={selected.region}
           onChange={(value) => handleSelectChange("region", value)}
         />
 
-        <Filter 
-          optionName="Price Range (S$)" optionList={priceRangeList}
+        <Filter
+          optionName="Price Range (S$)"
+          optionList={priceRangeList}
           option={selected.priceRange}
           onChange={(value) => handleSelectChange("priceRange", value)}
         />
 
-        <Filter 
-          optionName="Flat Type" 
+        <Filter
+          optionName="Flat Type"
           optionList={roomTypeList}
           option={selected.roomType}
           onChange={(value) => handleSelectChange("roomType", value)}
         />
 
-        <Filter 
-          optionName="Lease Life (Yr)" 
+        <Filter
+          optionName="Lease Life (Yr)"
           optionList={leaseLifeList}
           option={selected.leaseLife}
           onChange={(value) => handleSelectChange("leaseLife", value)}
         />
       </div>
+
 
       <div className='map-container'>
         <RegionalMap selectedRegion={selectedRegionId} />
@@ -309,13 +284,13 @@ function FilterSystem() {
         </div>
       </div>
 
-      <div className='search-button-box'>
-        <button 
-          className={`button ${isAllSelected? 'active':'disabled'}`}
+      <div className="search-button-box">
+        <button
+          className={`button ${isAllSelected ? "active" : "disabled"}`}
           onClick={handleSearch}
           disabled={!isAllSelected}
         >
-          Find 
+          Find
         </button>
       </div>
     </>

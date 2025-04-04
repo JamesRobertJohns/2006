@@ -8,7 +8,10 @@ import { BsHouse } from "react-icons/bs";
 import { Marker } from "react-map-gl/maplibre";
 import { FaHome } from "react-icons/fa";
 import UrbanDataObject from "./UrbanDataObject.jsx";
+import Bar from "./Bar";
+
 const primaryColor = "#2D4059";
+import Chart from "react-apexcharts";
 
 /**
  * inline styling for HDB icon
@@ -83,10 +86,34 @@ class Hdb extends UrbanDataObject {
     this.remaining_lease = remaining_lease;
     this.resale_price = resale_price;
     this.address = address;
+    this.nearestSchools = [];
+    this.nearestMRT = [];
+    this.nearestTrafficCameras = [];
+    this.nearestDengue = [];
   }
+
+  setNearestSchools = (nearestSchools) => {
+    this.nearestSchools = nearestSchools;
+  };
+
+  setNearestMRT = (nearestMRT) => {
+    this.nearestMRT = nearestMRT;
+  };
+
+  setNearestTrafficCameras = (nearestCameras) => {
+    this.nearestTrafficCameras = nearestCameras;
+  };
+
+  setNearestDengue = (nearestDengue) => {
+    this.nearestDengue = nearestDengue;
+  };
 
   getFlatType() {
     return this.flat_type;
+  }
+
+  getFullAddress() {
+    return this.address + " " + this.block;
   }
 
   getLeaseLife() {
@@ -96,6 +123,75 @@ class Hdb extends UrbanDataObject {
   getPrice() {
     return this.resale_price;
   }
+
+  getTotalScore(weights) {
+    // return 0.5;
+    const schoolTarget = this.nearestSchools?.[0];
+    const mrtTarget = this.nearestMRT?.[0];
+    const dengueTarget = this.nearestDengue?.[0];
+
+    const schoolScore = schoolTarget ? this.getDistanceScore(schoolTarget) : 0;
+    const mrtScore = mrtTarget ? this.getDistanceScore(mrtTarget) : 0;
+    const dengueScore = dengueTarget
+      ? this.getDengueDistanceScore(dengueTarget)
+      : 0;
+
+    // const schoolScore = 0.5;
+    // const mrtScore = 0.5;
+    // const dengueScore = 0.5;
+
+    // console.log(schoolTarget, mrtTarget, dengueTarget);
+    // console.log(schoolScore, mrtScore, dengueScore);
+
+    return (
+      weights &&
+      weights.school * schoolScore +
+        weights.mrt * mrtScore +
+        weights.dengue * dengueScore
+    );
+  }
+
+  getDistanceScore(target) {
+    if (!target) return 0;
+
+    const MAX_WALKING_DIST_KM = 2;
+    const KM_PER_DEGREE = 111;
+
+    const euclideanDistance = (obj, target) => {
+      const dx = obj.longitude - target.longitude;
+      const dy = obj.latitude - target.latitude;
+      return Math.sqrt(dx * dx + dy * dy);
+    };
+
+    const distDegrees = euclideanDistance(this, target);
+    const distKm = distDegrees * KM_PER_DEGREE;
+
+    // Base score: closer = higher score (clamped between 0 and 1)
+    let score = Math.max(0, 1 - distKm / MAX_WALKING_DIST_KM);
+
+    return score;
+  }
+
+  getDengueDistanceScore(target) {
+    if (!target) return 0;
+
+    const MAX_WALKING_DIST_KM = 5;
+    const KM_PER_DEGREE = 111;
+
+    const euclideanDistance = (obj, target) => {
+      const dx = obj.longitude - target.longitude;
+      const dy = obj.latitude - target.latitude;
+      return Math.sqrt(dx * dx + dy * dy);
+    };
+
+    const distDegrees = euclideanDistance(this, target);
+    const distKm = distDegrees * KM_PER_DEGREE;
+
+    let score = Math.min(1, distKm / MAX_WALKING_DIST_KM);
+
+    return score;
+  }
+
   /**
    * Returns <Marker /> component initialised with the HDB flat's coordinate
    * and icon.
@@ -122,6 +218,90 @@ class Hdb extends UrbanDataObject {
     );
   }
 
+  drawPriceDistributionGraph(flats) {
+    const getPriceStats = (flats) => {
+      let array = [];
+      for (let i = 0; i < flats.length; i++) {
+        array.push(Number(flats[i].resale_price));
+      }
+      array.sort((a, b) => a - b);
+      const getMedian = (array) => {
+        const mi = Math.floor(array.length / 2);
+        return array.length % 2 == 0
+          ? (array[mi - 1] + array[mi]) / 2
+          : array[mi];
+      };
+      const getQuartile = (arr, q) => {
+        const mid = Math.floor(arr.length / 2);
+        const lowerHalf = arr.slice(0, mid);
+        const upperHalf = arr.slice(arr.length % 2 === 0 ? mid : mid + 1);
+        return q === 1 ? getMedian(lowerHalf) : getMedian(upperHalf);
+      };
+      const q2 = getMedian(array);
+      const q1 = getQuartile(array, 1);
+      const q3 = getQuartile(array, 3);
+      const IQR = q3 - q1;
+      const lo = array.find((x) => x >= q1 - 1.5 * IQR) || array[0];
+      const hi =
+        array
+          .slice()
+          .reverse()
+          .find((x) => x <= q3 + 1.5 * IQR) || array[array.length - 1];
+      console.log(array);
+      return { lo, q1, q2, q3, hi };
+    };
+
+    const stats = getPriceStats(flats);
+
+    const boxplotData = {
+      x: "Price",
+      y: [stats.lo, stats.q1, stats.q2, stats.q3, stats.hi],
+      goals: [
+        {
+          value: this.resale_price,
+          strokeWidth: 10,
+          strokeHeight: 0,
+          strokeLineCap: "round",
+          strokeColor: "#F283B6",
+        },
+      ],
+    };
+
+    const options = {
+      chart: {
+        type: "boxPlot",
+        height: 150,
+        width: "80%",
+        toolbar: {
+          show: false,
+        },
+      },
+      title: {
+        text: "Price Distribution",
+        align: "left",
+        style: {
+          fontSize: "0",
+        },
+      },
+      plotOptions: {
+        bar: {
+          horizontal: true,
+          barHeight: "40%",
+        },
+        boxPlot: {
+          colors: {
+            upper: "#B6C454",
+            lower: "#EDBFB7",
+          },
+        },
+      },
+      stroke: {
+        colors: ["#333"],
+      },
+    };
+    return { data: boxplotData, opt: options };
+  }
+
   /**
    * Renders side panel by creating <div> and <p> elements
    *
@@ -130,49 +310,92 @@ class Hdb extends UrbanDataObject {
    * @description loads relevant attributes from HDB objects
    * @return the rendered side panel
    */
-  getSidePanel({ closeSidePanel, popCache }) {
+  getSidePanel({ closeSidePanel, popCache, filteredHdbs }) {
     const formatPrice = (price) => {
       return Number(price).toLocaleString();
     };
 
+    const { data, opt } = this.drawPriceDistributionGraph(filteredHdbs || []);
+
     return (
-      <div className={`sidebar ${"open"}`}>
-        <div className="sidebar-header">
-          <button className="close-btn" onClick={() => {}}></button>
-          <button
-            className="close-btn"
-            onClick={() => {
-              closeSidePanel();
-            }}
-          >
-            ✕
-          </button>
-        </div>
+      <>
+        <div className={`sidebar ${"open"}`}>
+          <div className="sidebar-header">
+            <button className="close-btn" onClick={() => {}}></button>
+            <button
+              className="close-btn"
+              onClick={() => {
+                closeSidePanel();
+              }}
+            >
+              ✕
+            </button>
+          </div>
 
-        <div className="sidebar-content">
-          <h2 className="rent-price">S${formatPrice(this.resale_price)}</h2>
-          <h5 className="property-name">{this.address}</h5>
-          <p className="sub-info">Lease hremaining: {this.remaining_lease}</p>
+          <div className="sidebar-content">
+            <h2 className="rent-price">S${formatPrice(this.resale_price)}</h2>
+            <div className="boxplot">
+              <Chart
+                options={opt}
+                series={[{ data: [data] }]}
+                type="boxPlot"
+                height={150}
+              />
+            </div>
+            <h5 className="property-name">{this.address}</h5>
+            <p className="sub-info">Lease hremaining: {this.remaining_lease}</p>
 
-          <div className="property-details">
-            <p>
-              <FaBed /> {this.flat_type}
-            </p>
-            <p>
-              <BsHouse /> {this.floor_area_sqm} m²
-            </p>
-            <p>
-              <FaRestroom /> Block: {this.block}
-            </p>
-            <p>
-              <FaMosquito /> Dengue: 1000
-            </p>
-            <p>
-              <FaTrainSubway /> Nearest Train: 5 min
-            </p>
+            <div className="property-details">
+              <p>
+                <FaBed /> {this.flat_type}
+              </p>
+              <p>
+                <BsHouse /> {this.floor_area_sqm} m²
+              </p>
+              <p>
+                <FaRestroom /> Block: {this.block}
+              </p>
+              <p>
+                <FaMosquito /> Dengue: 1000
+              </p>
+              <p>
+                <FaTrainSubway /> Nearest Train: 3 min
+              </p>
+            </div>
+
+            <div className="list-container">
+              {this.nearestSchools.map((school, index) => {
+                return (
+                  <div key={index} className="list-item">
+                    {school.school_name}
+                    <Bar value={this.getDistanceScore(school)} />
+                  </div>
+                );
+              })}
+            </div>
+            <div className="list-container">
+              {this.nearestMRT.map((mrt, index) => {
+                return (
+                  <div key={index} className="list-item">
+                    {mrt.name}
+                    <Bar value={this.getDistanceScore(mrt)} />
+                  </div>
+                );
+              })}
+            </div>
+            <div className="list-container">
+              {this.nearestDengue.map((dengue, index) => {
+                return (
+                  <div key={index} className="list-item">
+                    {dengue.caseSize}
+                    <Bar value={this.getDengueDistanceScore(dengue)} />
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 }
