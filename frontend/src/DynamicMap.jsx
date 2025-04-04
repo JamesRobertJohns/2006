@@ -223,7 +223,7 @@ function DynamicMap() {
     if (mapRef.current) {
       mapRef.current.flyTo({
         center: [longitude, latitude],
-        zoom: 13.5,
+        zoom: mapRef.current.getZoom(),
         speed: 0.25,
       });
     }
@@ -237,15 +237,8 @@ function DynamicMap() {
     fetchDengue(setDengues);
     fetchMrt(setMRTs);
     fetchSchool(setSchools);
-  }, []);
-
-  /**
-   * On Change of filteredHDB arrays,
-   * set DisplayHdbsarray
-   */
-  useEffect(() => {
     setDisplayHdbs(filteredHdbs);
-  }, [filteredHdbs]);
+  }, []);
 
   /**
    * On change of cahce array,
@@ -302,7 +295,28 @@ function DynamicMap() {
         cache[cache.length - 1].getSidePanel({
           closeSidePanel,
           popCache,
+          filteredHdbs,
         })}
+
+      {cache.length == 0 && (
+        <div className={`sidebar ${"open"}`}>
+          <div className="sidebar-header">HDB Recommendation</div>
+          <div className="sidebar-content">
+            <WeightSliders weights={weights} onChange={setWeights} />
+          </div>
+          <div>
+            {recommendedHdbs.length > 0 &&
+              recommendedHdbs.map((hdb, index) => {
+                return (
+                  <div key={index} className="list-item">
+                    {hdb.address}
+                    <Bar value={hdb.getTotalScore(weights)} />
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
 
       {cache.length == 0 && (
         <div className={`sidebar ${"open"}`}>

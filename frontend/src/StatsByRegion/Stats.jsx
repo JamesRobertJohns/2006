@@ -52,6 +52,60 @@ function Stats() {
   };
 
 
+  const getFlatDistributionStats = (region) => {
+
+    const dataContainer = {
+      '2 ROOM': 0,
+      '3 ROOM': 0,
+      '4 ROOM': 0,
+      '5 ROOM': 0,
+      'EXECUTIVE': 0
+    }
+
+    region.forEach((item) => {
+      if (dataContainer.hasOwnProperty(item.flat_type))
+        dataContainer[item.flat_type]++;
+    });
+
+
+    return dataContainer;
+  }
+
+
+  const drawFlatDistributionGraph = (regionstring) => {
+
+    const stats = getFlatDistributionStats(regions[regionstring]);
+    const categories = Object.keys(stats);
+    const data = Object.values(stats); 
+    const options = {
+      colors: ["#2F3C7E"],
+      plotOptions: {
+        bar: {
+          borderRadius: 8,
+          dataLabels: { position: "top" },
+        }
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: (val) => val,
+        offsetY: 0,
+        style: { fontSize: "24px", colors: ["#FBEAEB"] }
+      },
+      xaxis: { categories: categories, axisBorder: { show: false }, axisTicks: { show: false } },
+      yaxis: { labels: { show: true } },
+      title: { 
+        text: `Flat Type Distribution for ${regionstring}`, 
+        align: "center",
+        style: {
+          fontSize: '32px',
+          color: '#2F3C7E'
+        },
+      },
+    };
+
+    return {options: options, data: data}; 
+  }
+
 
   const drawPriceDistributionGraph = (room) => {
 
@@ -77,12 +131,9 @@ function Stats() {
     });
 
     const options = {
-      chart: {
-        type: 'boxPlot',
-        height: 350,
-      },
       plotOptions: {
         boxPlot: {
+          borderRadius: 8,
           colors: {
             upper: '#2F3C7E',
             lower: '#FBEAEB'
@@ -92,7 +143,12 @@ function Stats() {
       title: {
         text: `Price Distribution for ${room} Flats`,
         align: 'center',
+        style: {
+          fontSize: '32px',
+          color: '#2F3C7E'
+        },
       },
+
       xaxis: {
         categories: Object.keys(dataContainer) 
       },
@@ -103,38 +159,108 @@ function Stats() {
 
 
   const [room, setRoom] = useState("2 ROOM"); 
-  const [opt, setOpt] = useState({});
-  const [data, setData] = useState([]); 
+  const [optPrice, setOptPrice] = useState({});
+  const [dataPrice, setDataPrice] = useState([]); 
 
   useEffect(() => {
     const { options, data } = drawPriceDistributionGraph(room);
-    setOpt(options);
-    setData(data);
+    setOptPrice(options);
+    setDataPrice(data);
   }, [room, regions]);
 
-  const handleRoomChange = (room) => {
+  const handleRoomChange = (room, id) => {
+    setActiveb(id);
     setRoom(room);
   };
-  
+
+  const [r, setR] = useState("north");
+  const handleRegionChange = (region, id) => {
+    setActiveb(id);
+    setR(region);
+  };
+  const [optCount, setOptCount] = useState({});
+  const [dataCount, setDataCount] = useState([]); 
+
+
+
+  useEffect(() => {
+    const { options, data } = drawFlatDistributionGraph(r);
+    setOptCount(options);
+    setDataCount(data);
+  }, [r, regions]);
+
+  const [activeb, setActiveb] = useState(null);
+
+  const roomb = [
+    {id: 1, label: "2 ROOM"},
+    {id: 2, label: "3 ROOM"},
+    {id: 3, label: "4 ROOM"},
+    {id: 4, label: "5 ROOM"},
+    {id: 5, label: "EXECUTIVE"}
+  ];
+
+  const flatb = [
+    {id: 6, label: "north"},
+    {id: 7, label: "central"},
+    {id: 8, label: "east"},
+    {id: 9, label: "west"},
+    {id: 10, label: "northEast"}
+  ];
 
   return (
     <>
-      <div className="room-type-button-container">
-        <button onClick={() => handleRoomChange("2 ROOM")}>2 Room</button>
-        <button onClick={() => handleRoomChange("3 ROOM")}>3 Room</button>
-        <button onClick={() => handleRoomChange("4 ROOM")}>4 Room</button>
-        <button onClick={() => handleRoomChange("5 ROOM")}>5 Room</button>
-        <button onClick={() => handleRoomChange("EXECUTIVE")}>Executive</button>
+
+      <div className="chart-container">
+        <h2 className="heading">Price Distribution of Flats By Region</h2> 
+        <div className="boxplot">
+          <Chart
+            options={optPrice}
+            series={[{data: dataPrice}]}
+            type="boxPlot"
+            height={450}
+          />
+        </div>
+        <div className="button-container">
+          {roomb.map((room) => (
+            <button
+              key={room.id}
+              onClick={() => handleRoomChange(room.label, room.id)}
+              className={activeb === room.id ? "clicked" : "button"}
+            >
+              {room.label.toLowerCase()}
+            </button>
+          ))}
+        </div>
+      </div>
+
+
+      <div className="chart-container">
+
+        <h2 className="heading">Flat Type Distribution By Region</h2> 
+
+        <div className="histogram">
+          <Chart
+            options={optCount}
+            series={[{name: 'Flat Count', data: dataCount}]}
+            type="bar"
+            height={450}
+          />
+        </div>
+
+        <div className="button-container">
+          {flatb.map((r) => (
+            <button
+              key={r.id}
+              onClick={() => handleRegionChange(r.label, r.id)}
+              className={activeb === r.id ? "clicked" : "button"}
+            >
+              {r.label.toLowerCase()}
+            </button>
+          ))}
+        </div>
 
       </div>
-      <div className="boxplot">
-        <Chart
-          options={opt}
-          series={[{data: data}]}
-          type="boxPlot"
-          height={450}
-        />
-      </div>
+
     </>
   );
-}export default Stats;
+} export default Stats;
