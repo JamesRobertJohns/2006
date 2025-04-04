@@ -8,7 +8,6 @@ import { BsHouse } from "react-icons/bs";
 import { Marker } from "react-map-gl/maplibre";
 import { FaHome } from "react-icons/fa";
 import UrbanDataObject from "./UrbanDataObject.jsx";
-import "./Hdb.css";
 import Bar from "./Bar";
 
 const primaryColor = "#2D4059";
@@ -87,14 +86,33 @@ class Hdb extends UrbanDataObject {
     this.resale_price = resale_price;
     this.address = address;
     this.nearestSchools = [];
+    this.nearestMRT = [];
+    this.nearestTrafficCameras = [];
+    this.nearestDengue = [];
   }
 
   setNearestSchools = (nearestSchools) => {
     this.nearestSchools = nearestSchools;
   };
 
+  setNearestMRT = (nearestMRT) => {
+    this.nearestMRT = nearestMRT;
+  };
+
+  setNearestTrafficCameras = (nearestCameras) => {
+    this.nearestTrafficCameras = nearestCameras;
+  };
+
+  setNearestDengue = (nearestDengue) => {
+    this.nearestDengue = nearestDengue;
+  };
+
   getFlatType() {
     return this.flat_type;
+  }
+
+  getFullAddress() {
+    return this.address + " " + this.block;
   }
 
   getLeaseLife() {
@@ -104,6 +122,75 @@ class Hdb extends UrbanDataObject {
   getPrice() {
     return this.resale_price;
   }
+
+  getTotalScore(weights) {
+    // return 0.5;
+    const schoolTarget = this.nearestSchools?.[0];
+    const mrtTarget = this.nearestMRT?.[0];
+    const dengueTarget = this.nearestDengue?.[0];
+
+    const schoolScore = schoolTarget ? this.getDistanceScore(schoolTarget) : 0;
+    const mrtScore = mrtTarget ? this.getDistanceScore(mrtTarget) : 0;
+    const dengueScore = dengueTarget
+      ? this.getDengueDistanceScore(dengueTarget)
+      : 0;
+
+    // const schoolScore = 0.5;
+    // const mrtScore = 0.5;
+    // const dengueScore = 0.5;
+
+    // console.log(schoolTarget, mrtTarget, dengueTarget);
+    // console.log(schoolScore, mrtScore, dengueScore);
+
+    return (
+      weights &&
+      weights.school * schoolScore +
+        weights.mrt * mrtScore +
+        weights.dengue * dengueScore
+    );
+  }
+
+  getDistanceScore(target) {
+    if (!target) return 0;
+
+    const MAX_WALKING_DIST_KM = 2;
+    const KM_PER_DEGREE = 111;
+
+    const euclideanDistance = (obj, target) => {
+      const dx = obj.longitude - target.longitude;
+      const dy = obj.latitude - target.latitude;
+      return Math.sqrt(dx * dx + dy * dy);
+    };
+
+    const distDegrees = euclideanDistance(this, target);
+    const distKm = distDegrees * KM_PER_DEGREE;
+
+    // Base score: closer = higher score (clamped between 0 and 1)
+    let score = Math.max(0, 1 - distKm / MAX_WALKING_DIST_KM);
+
+    return score;
+  }
+
+  getDengueDistanceScore(target) {
+    if (!target) return 0;
+
+    const MAX_WALKING_DIST_KM = 5;
+    const KM_PER_DEGREE = 111;
+
+    const euclideanDistance = (obj, target) => {
+      const dx = obj.longitude - target.longitude;
+      const dy = obj.latitude - target.latitude;
+      return Math.sqrt(dx * dx + dy * dy);
+    };
+
+    const distDegrees = euclideanDistance(this, target);
+    const distKm = distDegrees * KM_PER_DEGREE;
+
+    let score = Math.min(1, distKm / MAX_WALKING_DIST_KM);
+
+    return score;
+  }
+
   /**
    * Returns <Marker /> component initialised with the HDB flat's coordinate
    * and icon.
@@ -142,15 +229,6 @@ class Hdb extends UrbanDataObject {
   getSidePanel({ closeSidePanel, popCache }) {
     const formatPrice = (price) => {
       return Number(price).toLocaleString();
-    };
-
-    const KM_PER_DEGREE = 111;
-    const MAX_WALKING_DIST_KM = 2;
-
-    const euclideanDistance = (obj, target) => {
-      const dx = obj.longitude - target.longitude;
-      const dy = obj.latitude - target.latitude;
-      return Math.sqrt(dx * dx + dy * dy);
     };
 
     return (
@@ -192,15 +270,30 @@ class Hdb extends UrbanDataObject {
 
           <div className="list-container">
             {this.nearestSchools.map((school, index) => {
-              const dist = euclideanDistance(this, school) * KM_PER_DEGREE;
-              console.log(dist);
               return (
                 <div key={index} className="list-item">
                   {school.school_name}
-                  <Bar
-                    current={Math.min(dist, MAX_WALKING_DIST_KM)}
-                    max={MAX_WALKING_DIST_KM}
-                  />
+                  <Bar value={this.getDistanceScore(school)} />
+                </div>
+              );
+            })}
+          </div>
+          <div className="list-container">
+            {this.nearestMRT.map((mrt, index) => {
+              return (
+                <div key={index} className="list-item">
+                  {mrt.name}
+                  <Bar value={this.getDistanceScore(mrt)} />
+                </div>
+              );
+            })}
+          </div>
+          <div className="list-container">
+            {this.nearestDengue.map((dengue, index) => {
+              return (
+                <div key={index} className="list-item">
+                  {dengue.caseSize}
+                  <Bar value={this.getDengueDistanceScore(dengue)} />
                 </div>
               );
             })}

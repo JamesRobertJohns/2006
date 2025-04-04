@@ -12,6 +12,7 @@ import HDBContext from "./HDBContext.jsx";
 import MapControl from "./MapControl.jsx";
 import "./classes/Sidebar.css";
 import WeightSliders from "./WeightSliders";
+import Bar from "./classes/Bar";
 
 const initialLongitude = 103.81895378099354;
 const initialLatitude = 1.356474868742945;
@@ -114,6 +115,7 @@ const fetchSchool = async (setSchool) => {
  */
 function DynamicMap() {
   const { filteredHdbs, setFilteredHdbs } = useContext(HDBContext);
+  const [recommendedHdbs, setRecommendedHdbs] = useState([]);
   const [trafficCameras, setTrafficCameras] = useState([]);
   const [dengues, setDengues] = useState([]);
   const [MRTs, setMRTs] = useState([]);
@@ -134,9 +136,9 @@ function DynamicMap() {
   const [cache, setCache] = useState([]); // cache state for side panel
 
   const [weights, setWeights] = useState({
-    school: 0.5,
-    mrt: 0.7,
-    dengue: 0.2,
+    school: 0.25,
+    mrt: 0.25,
+    dengue: 0.25,
   });
 
   const mapRef = useRef();
@@ -158,14 +160,13 @@ function DynamicMap() {
    *
    * @param {class} element - a valid class with longitude and latitude. Refers to a HDB
    */
-  const setActiveHdb = async (element) => {
+  const setActiveHdb = (element) => {
     pushCache(element);
-    setDisplayTrafficCameras(getNearestNLocations(trafficCameras, element, 5));
-    setDisplayDengue(getNearestNLocations(dengues, element, 3));
-    setDisplayMRTs(getNearestNLocations(MRTs, element, 1));
-    const nearestSchools = await getNearestNLocations(Schools, element, 3);
-    setDisplaySchools(nearestSchools);
-    element.setNearestSchools(nearestSchools);
+
+    setDisplayTrafficCameras(element.nearestTrafficCameras);
+    setDisplayMRTs(element.nearestMRT);
+    setDisplayDengue(element.nearestDengue);
+    setDisplaySchools(element.nearestSchools);
     setDisplayHdbs([element]);
   };
 
@@ -258,6 +259,42 @@ function DynamicMap() {
     }
   }, [cache]);
 
+  useEffect(() => {
+    const allLoaded =
+      filteredHdbs.length > 0 && MRTs.length > 0 && Schools.length > 0;
+
+    if (allLoaded) {
+      console.log("Running calculation...");
+      filteredHdbs.forEach((hdb) => {
+        hdb.setNearestMRT(getNearestNLocations(MRTs, hdb, 1));
+        hdb.setNearestSchools(getNearestNLocations(Schools, hdb, 3));
+        hdb.setNearestTrafficCameras(
+          getNearestNLocations(trafficCameras, hdb, 5)
+        );
+        hdb.setNearestDengue(getNearestNLocations(dengues, hdb, 1));
+      });
+    }
+  }, [filteredHdbs, MRTs, Schools]);
+
+  useEffect(() => {
+    console.log("update ranking");
+    const sorted = [...filteredHdbs].sort(
+      (a, b) => b.getTotalScore(weights) - a.getTotalScore(weights)
+    );
+
+    console.log(sorted);
+
+    const seen = new Set();
+    const uniqueHdbs = sorted.filter((hdb) => {
+      if (seen.has(hdb.getFullAddress())) return false;
+      seen.add(hdb.getFullAddress());
+      return true;
+    });
+
+    console.log("sorted hdb by score");
+    setRecommendedHdbs(uniqueHdbs);
+  }, [weights, filteredHdbs]);
+
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
       {/* Side Panel */}
@@ -272,6 +309,17 @@ function DynamicMap() {
           <div className="sidebar-header">HDB Recommendation</div>
           <div className="sidebar-content">
             <WeightSliders weights={weights} onChange={setWeights} />
+          </div>
+          <div>
+            {recommendedHdbs.length > 0 &&
+              recommendedHdbs.map((hdb, index) => {
+                return (
+                  <div key={index} className="list-item">
+                    {hdb.address}
+                    <Bar value={hdb.getTotalScore(weights)} />
+                  </div>
+                );
+              })}
           </div>
         </div>
       )}

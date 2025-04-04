@@ -60,3 +60,14 @@
     font-size: 16px;
   }
   
+  .list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .list-item {
+    padding: 10px;
+    border: 1px solid #ccc;
+  }
+  
