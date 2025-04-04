@@ -146,7 +146,7 @@ function FilterSystem() {
    */
   const isAllSelected = !Object.values(selected).includes("");
 
- 
+
   /**
    * Filters the HDB flats based on the options passed, updates the filteredHdbs array.
    *
@@ -179,7 +179,7 @@ function FilterSystem() {
     }
 
 
-   /**
+    /**
     * Filters HDB flats to the corresponding Flat Types.
     *
     * Calls the getFlatType() method in HDB objects and do a comparison.
@@ -260,66 +260,66 @@ function FilterSystem() {
     }
     setFilteredHdbs(filtered);
   }, [selected, allHdbs]);
-  
-const regionToIdMap = {
-  "Central": "SG-01",
-  "East": "SG-04",
-  "North": "SG-02",
-  "North-East": "SG-03",
-  "West": "SG-05",
-};
-const selectedRegionId = regionToIdMap[selected.region] || "";
-return (
-  <>
-    <div className='filter-bar-box'>
 
-      <Filter 
-        optionName="Region" 
-        optionList={regionList} 
-        option={selected.region}
-        onChange={(value) => handleSelectChange("region", value)}
-      />
+  const regionToIdMap = {
+    "Central": "SG-01",
+    "East": "SG-04",
+    "North": "SG-02",
+    "North-East": "SG-03",
+    "West": "SG-05",
+  };
+  const selectedRegionId = regionToIdMap[selected.region] || "";
+  return (
+    <>
+      <div className='filter-bar-box'>
 
-      <Filter 
-        optionName="Price Range (S$)" optionList={priceRangeList}
-        option={selected.priceRange}
-        onChange={(value) => handleSelectChange("priceRange", value)}
-      />
+        <Filter 
+          optionName="Region" 
+          optionList={regionList} 
+          option={selected.region}
+          onChange={(value) => handleSelectChange("region", value)}
+        />
 
-      <Filter 
-        optionName="Flat Type" 
-        optionList={roomTypeList}
-        option={selected.roomType}
-        onChange={(value) => handleSelectChange("roomType", value)}
-      />
+        <Filter 
+          optionName="Price Range (S$)" optionList={priceRangeList}
+          option={selected.priceRange}
+          onChange={(value) => handleSelectChange("priceRange", value)}
+        />
 
-      <Filter 
-        optionName="Lease Life (Yr)" 
-        optionList={leaseLifeList}
-        option={selected.leaseLife}
-        onChange={(value) => handleSelectChange("leaseLife", value)}
-      />
-</div>
+        <Filter 
+          optionName="Flat Type" 
+          optionList={roomTypeList}
+          option={selected.roomType}
+          onChange={(value) => handleSelectChange("roomType", value)}
+        />
 
-<div className='map-container'>
-<RegionalMap selectedRegion={selectedRegionId} />
-<div className='flats-available-overlay'>
-  <h1>{filteredHdbs.length.toLocaleString()}</h1>
-  <p>Flats Available</p>
-</div>
-</div>
+        <Filter 
+          optionName="Lease Life (Yr)" 
+          optionList={leaseLifeList}
+          option={selected.leaseLife}
+          onChange={(value) => handleSelectChange("leaseLife", value)}
+        />
+      </div>
 
-<div className='search-button-box'>
-<button 
-  className={`button ${isAllSelected? 'active':'disabled'}`}
-  onClick={handleSearch}
-  disabled={!isAllSelected}
->
-  Find 
-</button>
-</div>
-</>
-);
+      <div className='map-container'>
+        <RegionalMap selectedRegion={selectedRegionId} />
+        <div className='flats-available-overlay'>
+          <h1>{filteredHdbs.length.toLocaleString()}</h1>
+          <p>Flats Available</p>
+        </div>
+      </div>
+
+      <div className='search-button-box'>
+        <button 
+          className={`button ${isAllSelected? 'active':'disabled'}`}
+          onClick={handleSearch}
+          disabled={!isAllSelected}
+        >
+          Find 
+        </button>
+      </div>
+    </>
+  );
 }
 
 export default FilterSystem;
