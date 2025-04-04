@@ -8,6 +8,9 @@ import { BsHouse } from "react-icons/bs";
 import { Marker } from "react-map-gl/maplibre";
 import { FaHome } from "react-icons/fa";
 import UrbanDataObject from "./UrbanDataObject.jsx";
+import "./Hdb.css";
+import Bar from "./Bar";
+
 const primaryColor = "#2D4059";
 
 /**
@@ -83,7 +86,12 @@ class Hdb extends UrbanDataObject {
     this.remaining_lease = remaining_lease;
     this.resale_price = resale_price;
     this.address = address;
+    this.nearestSchools = [];
   }
+
+  setNearestSchools = (nearestSchools) => {
+    this.nearestSchools = nearestSchools;
+  };
 
   getFlatType() {
     return this.flat_type;
@@ -130,9 +138,19 @@ class Hdb extends UrbanDataObject {
    * @description loads relevant attributes from HDB objects
    * @return the rendered side panel
    */
+
   getSidePanel({ closeSidePanel, popCache }) {
     const formatPrice = (price) => {
       return Number(price).toLocaleString();
+    };
+
+    const KM_PER_DEGREE = 111;
+    const MAX_WALKING_DIST_KM = 2;
+
+    const euclideanDistance = (obj, target) => {
+      const dx = obj.longitude - target.longitude;
+      const dy = obj.latitude - target.latitude;
+      return Math.sqrt(dx * dx + dy * dy);
     };
 
     return (
@@ -168,8 +186,24 @@ class Hdb extends UrbanDataObject {
               <FaMosquito /> Dengue: 1000
             </p>
             <p>
-              <FaTrainSubway /> Nearest Train: 5 min
+              <FaTrainSubway /> Nearest Train: 3 min
             </p>
+          </div>
+
+          <div className="list-container">
+            {this.nearestSchools.map((school, index) => {
+              const dist = euclideanDistance(this, school) * KM_PER_DEGREE;
+              console.log(dist);
+              return (
+                <div key={index} className="list-item">
+                  {school.school_name}
+                  <Bar
+                    current={Math.min(dist, MAX_WALKING_DIST_KM)}
+                    max={MAX_WALKING_DIST_KM}
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

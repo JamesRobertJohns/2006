@@ -10,6 +10,8 @@ import Mrt from "./classes/Mrt.jsx";
 import School from "./classes/School.jsx";
 import HDBContext from "./HDBContext.jsx";
 import MapControl from "./MapControl.jsx";
+import "./classes/Sidebar.css";
+import WeightSliders from "./WeightSliders";
 
 const initialLongitude = 103.81895378099354;
 const initialLatitude = 1.356474868742945;
@@ -131,6 +133,12 @@ function DynamicMap() {
 
   const [cache, setCache] = useState([]); // cache state for side panel
 
+  const [weights, setWeights] = useState({
+    school: 0.5,
+    mrt: 0.7,
+    dengue: 0.2,
+  });
+
   const mapRef = useRef();
 
   const pushCache = (element) => {
@@ -150,12 +158,14 @@ function DynamicMap() {
    *
    * @param {class} element - a valid class with longitude and latitude. Refers to a HDB
    */
-  const setActiveHdb = (element) => {
+  const setActiveHdb = async (element) => {
     pushCache(element);
     setDisplayTrafficCameras(getNearestNLocations(trafficCameras, element, 5));
     setDisplayDengue(getNearestNLocations(dengues, element, 3));
     setDisplayMRTs(getNearestNLocations(MRTs, element, 1));
-    setDisplaySchools(getNearestNLocations(Schools, element, 3));
+    const nearestSchools = await getNearestNLocations(Schools, element, 3);
+    setDisplaySchools(nearestSchools);
+    element.setNearestSchools(nearestSchools);
     setDisplayHdbs([element]);
   };
 
@@ -256,6 +266,15 @@ function DynamicMap() {
           closeSidePanel,
           popCache,
         })}
+
+      {cache.length == 0 && (
+        <div className={`sidebar ${"open"}`}>
+          <div className="sidebar-header">HDB Recommendation</div>
+          <div className="sidebar-content">
+            <WeightSliders weights={weights} onChange={setWeights} />
+          </div>
+        </div>
+      )}
 
       {/* Toggle Buttons */}
       {cache.length > 0 && (
