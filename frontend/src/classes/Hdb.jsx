@@ -334,6 +334,14 @@ class Hdb extends UrbanDataObject {
 
           <div className="sidebar-content">
             <h2 className="rent-price">S${formatPrice(this.resale_price)}</h2>
+            <div className="boxplot">
+              <Chart
+                options={opt}
+                series={[{ data: [data] }]}
+                type="boxPlot"
+                height={150}
+              />
+            </div>
             <h5 className="property-name">{this.address}</h5>
             <p className="sub-info">Lease hremaining: {this.remaining_lease}</p>
 
@@ -385,15 +393,6 @@ class Hdb extends UrbanDataObject {
                 );
               })}
             </div>
-          </div>
-
-          <div className="boxplot">
-            <Chart
-              options={opt}
-              series={[{ data: [data] }]}
-              type="boxPlot"
-              height={150}
-            />
           </div>
         </div>
       </>
