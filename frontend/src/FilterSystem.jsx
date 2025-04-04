@@ -1,10 +1,14 @@
-import { useState, useEffect, useContext } from "react";
+
+import { useState, useMemo, useEffect, useContext } from 'react';
 import Filter from "./Filter/Filter.jsx";
 import { useNavigate } from "react-router-dom";
 import Hdb from "./classes/Hdb.jsx";
 import TownToRegionMap from "./TownToRegion.json";
 import DynamicMap from "./DynamicMap.jsx";
 import HDBContext from "./HDBContext.jsx";
+import RegionalMap from './RegionalMap.jsx';
+import "./FilterSystem.css";
+
 
 /**
  * Function that handles filtering logic, dynamically updates number of flats available
@@ -159,14 +163,15 @@ function FilterSystem() {
       });
     }
 
+
     /**
-     * Filters HDB flats to the corresponding Flat Types.
-     *
-     * Calls the getFlatType() method in HDB objects and do a comparison.
-     *
-     * @return {bool} if the flat type of the HDB is equals to the selected flat
-     * type
-     */
+    * Filters HDB flats to the corresponding Flat Types.
+    *
+    * Calls the getFlatType() method in HDB objects and do a comparison.
+    *
+    * @return {bool} if the flat type of the HDB is equals to the selected flat
+    * type
+    */
     if (selected.roomType) {
       filtered = filtered.filter((hdb) => {
         const roomType = hdb.getFlatType();
@@ -230,6 +235,14 @@ function FilterSystem() {
     setFilteredHdbs(filtered);
   }, [selected, allHdbs]);
 
+  const regionToIdMap = {
+    "Central": "SG-01",
+    "East": "SG-04",
+    "North": "SG-02",
+    "North-East": "SG-03",
+    "West": "SG-05",
+  };
+  const selectedRegionId = regionToIdMap[selected.region] || "";
   return (
     <>
       <div className="filter-bar-box">
@@ -262,9 +275,13 @@ function FilterSystem() {
         />
       </div>
 
-      <div className="house-count">
-        <h1>{filteredHdbs.length.toLocaleString()}</h1>
-        <p>Flats Available</p>
+
+      <div className='map-container'>
+        <RegionalMap selectedRegion={selectedRegionId} />
+        <div className='flats-available-overlay'>
+          <h1>{filteredHdbs.length.toLocaleString()}</h1>
+          <p>Flats Available</p>
+        </div>
       </div>
 
       <div className="search-button-box">
