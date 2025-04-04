@@ -226,17 +226,10 @@ function DynamicMap() {
     fetchDengue(setDengues);
     fetchMrt(setMRTs);
     fetchSchool(setSchools);
+    setDisplayHdbs(filteredHdbs);
   }, []);
 
-  /**
-   * On Change of filteredHDB arrays,
-   * set DisplayHdbsarray
-   */
-  useEffect(() => {
-    setDisplayHdbs(filteredHdbs);
-  }, [filteredHdbs]);
-
-  /**
+   /**
    * On change of cahce array,
    * if there are elements on the stack, pop the stack
    * fly to location in the element
@@ -248,13 +241,16 @@ function DynamicMap() {
     }
   }, [cache]);
 
+
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
+
       {/* Side Panel */}
       {cache.length > 0 &&
         cache[cache.length - 1].getSidePanel({
           closeSidePanel,
           popCache,
+          filteredHdbs
         })}
 
       {/* Toggle Buttons */}
