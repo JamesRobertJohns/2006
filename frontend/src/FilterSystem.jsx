@@ -289,6 +289,7 @@ function FilterSystem() {
           className={`button ${isAllSelected ? "active" : "disabled"}`}
           onClick={handleSearch}
           disabled={!isAllSelected}
+          style={{margin:'7em'}}
         >
           Find
         </button>

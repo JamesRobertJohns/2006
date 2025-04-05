@@ -2,7 +2,7 @@
     position: relative; 
     width: 100%;
     max-width: 700px; 
-    margin: 8em auto auto auto; 
+    margin: 10em auto auto auto; 
     transform: scale(1.55);
     pointer-events: none;
 }
