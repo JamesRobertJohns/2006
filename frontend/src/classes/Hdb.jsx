@@ -297,7 +297,7 @@ class Hdb extends UrbanDataObject {
    * @description loads relevant attributes from HDB objects
    * @return the rendered side panel
    */
-  getSidePanel({ closeSidePanel, popCache, filteredHdbs }) {
+  getSidePanel({ closeSidePanel, pushCache, popCache, filteredHdbs }) {
     const formatPrice = (price) => {
       return Number(price).toLocaleString();
     };
@@ -349,7 +349,13 @@ class Hdb extends UrbanDataObject {
               </p>
               {this.nearestSchools.map((school, index) => {
                 return (
-                  <div key={index} className="list-item">
+                  <div
+                    key={index}
+                    className="list-item"
+                    onClick={() => {
+                      pushCache(school);
+                    }}
+                  >
                     {school.school_name}
                     <Bar value={this.getDistanceScore(school)} />
                   </div>
@@ -365,7 +371,13 @@ class Hdb extends UrbanDataObject {
               </p>
               {this.nearestMRT.map((mrt, index) => {
                 return (
-                  <div key={index} className="list-item">
+                  <div
+                    key={index}
+                    className="list-item"
+                    onClick={() => {
+                      pushCache(mrt);
+                    }}
+                  >
                     {mrt.name}
                     <Bar value={this.getDistanceScore(mrt)} />
                   </div>
@@ -381,7 +393,13 @@ class Hdb extends UrbanDataObject {
               </p>
               {this.nearestDengue.map((dengue, index) => {
                 return (
-                  <div key={index} className="list-item">
+                  <div
+                    key={index}
+                    className="list-item"
+                    onClick={() => {
+                      pushCache(dengue);
+                    }}
+                  >
                     Cluster Size: {dengue.caseSize} Cases
                     <Bar value={this.getDengueDistanceScore(dengue)} />
                   </div>

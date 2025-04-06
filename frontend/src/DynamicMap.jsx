@@ -294,6 +294,7 @@ function DynamicMap() {
       {cache.length > 0 &&
         cache[cache.length - 1].getSidePanel({
           closeSidePanel,
+          pushCache,
           popCache,
           filteredHdbs,
         })}
