@@ -1,5 +1,5 @@
 import { Marker } from "react-map-gl/dist/esm/exports-maplibre";
-import { FaTrain } from "react-icons/fa6";
+import { FaTrainSubway } from "react-icons/fa6";
 import { IoArrowBackSharp } from "react-icons/io5";
 import UrbanDataObject from "./UrbanDataObject.jsx";
 
@@ -15,7 +15,7 @@ const styles = {
     borderRadius: "50%",
     border: "2.5px solid " + primaryColor,
     backgroundColor: "white",
-    padding: 4,
+    padding: 5,
   },
   icon: {
     color: primaryColor,
@@ -67,7 +67,7 @@ class Mrt extends UrbanDataObject {
         }}
       >
         <div style={styles.iconContainer}>
-          <FaTrain cursor="pointer" size={22} style={styles.icon} />
+          <FaTrainSubway cursor="pointer" size={19} style={styles.icon} />
         </div>
       </Marker>
     );

@@ -18,7 +18,7 @@ const styles = {
     borderRadius: "50%",
     border: "2.4px solid" + primaryColor,
     backgroundColor: "white",
-    padding: 3,
+    padding: 4,
   },
   icon: {
     color: primaryColor,

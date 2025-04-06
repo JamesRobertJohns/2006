@@ -7,6 +7,7 @@ import { MdEmail } from "react-icons/md";
 import { FaPhone } from "react-icons/fa6";
 import { PiTrainBold } from "react-icons/pi";
 import { BsFillBusFrontFill } from "react-icons/bs";
+
 import UrbanDataObject from "./UrbanDataObject.jsx";
 /**
  * Handles the link clicking event.
@@ -36,7 +37,7 @@ const styles = {
     borderRadius: "50%",
     border: "2.4px solid " + primaryColor,
     backgroundColor: "white",
-    padding: 3,
+    padding: 4,
   },
   icon: {
     color: primaryColor,
