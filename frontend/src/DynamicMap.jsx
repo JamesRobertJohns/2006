@@ -294,6 +294,7 @@ function DynamicMap() {
       {cache.length > 0 &&
         cache[cache.length - 1].getSidePanel({
           closeSidePanel,
+          pushCache,
           popCache,
           filteredHdbs,
         })}
@@ -308,27 +309,14 @@ function DynamicMap() {
             {recommendedHdbs.length > 0 &&
               recommendedHdbs.map((hdb, index) => {
                 return (
-                  <div key={index} className="list-item">
-                    {hdb.address}
-                    <Bar value={hdb.getTotalScore(weights)} />
-                  </div>
-                );
-              })}
-          </div>
-        </div>
-      )}
-
-      {cache.length == 0 && (
-        <div className={`sidebar ${"open"}`}>
-          <div className="sidebar-header">HDB Recommendation</div>
-          <div className="sidebar-content">
-            <WeightSliders weights={weights} onChange={setWeights} />
-          </div>
-          <div>
-            {recommendedHdbs.length > 0 &&
-              recommendedHdbs.map((hdb, index) => {
-                return (
-                  <div key={index} className="list-item">
+                  <div
+                    key={index}
+                    className="list-item"
+                    onClick={() => {
+                      console.log("clicked", hdb);
+                      setActiveHdb(hdb);
+                    }}
+                  >
                     {hdb.address}
                     <Bar value={hdb.getTotalScore(weights)} />
                   </div>

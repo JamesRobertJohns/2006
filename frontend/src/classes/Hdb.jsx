@@ -9,6 +9,7 @@ import { Marker } from "react-map-gl/maplibre";
 import { FaHome } from "react-icons/fa";
 import UrbanDataObject from "./UrbanDataObject.jsx";
 import Bar from "./Bar";
+import { IoSchoolOutline } from "react-icons/io5";
 
 const primaryColor = "#2D4059";
 import Chart from "react-apexcharts";
@@ -125,7 +126,6 @@ class Hdb extends UrbanDataObject {
   }
 
   getTotalScore(weights) {
-    // return 0.5;
     const schoolTarget = this.nearestSchools?.[0];
     const mrtTarget = this.nearestMRT?.[0];
     const dengueTarget = this.nearestDengue?.[0];
@@ -136,13 +136,6 @@ class Hdb extends UrbanDataObject {
       ? this.getDengueDistanceScore(dengueTarget)
       : 0;
 
-    // const schoolScore = 0.5;
-    // const mrtScore = 0.5;
-    // const dengueScore = 0.5;
-
-    // console.log(schoolTarget, mrtTarget, dengueTarget);
-    // console.log(schoolScore, mrtScore, dengueScore);
-
     return (
       weights &&
       weights.school * schoolScore +
@@ -151,10 +144,7 @@ class Hdb extends UrbanDataObject {
     );
   }
 
-  getDistanceScore(target) {
-    if (!target) return 0;
-
-    const MAX_WALKING_DIST_KM = 2;
+  getDistanceFromHDBinKM(target) {
     const KM_PER_DEGREE = 111;
 
     const euclideanDistance = (obj, target) => {
@@ -163,8 +153,14 @@ class Hdb extends UrbanDataObject {
       return Math.sqrt(dx * dx + dy * dy);
     };
 
-    const distDegrees = euclideanDistance(this, target);
-    const distKm = distDegrees * KM_PER_DEGREE;
+    return euclideanDistance(this, target) * KM_PER_DEGREE;
+  }
+
+  getDistanceScore(target) {
+    if (!target) return 0;
+
+    const MAX_WALKING_DIST_KM = 2;
+    const distKm = this.getDistanceFromHDBinKM(target);
 
     // Base score: closer = higher score (clamped between 0 and 1)
     let score = Math.max(0, 1 - distKm / MAX_WALKING_DIST_KM);
@@ -176,16 +172,7 @@ class Hdb extends UrbanDataObject {
     if (!target) return 0;
 
     const MAX_WALKING_DIST_KM = 5;
-    const KM_PER_DEGREE = 111;
-
-    const euclideanDistance = (obj, target) => {
-      const dx = obj.longitude - target.longitude;
-      const dy = obj.latitude - target.latitude;
-      return Math.sqrt(dx * dx + dy * dy);
-    };
-
-    const distDegrees = euclideanDistance(this, target);
-    const distKm = distDegrees * KM_PER_DEGREE;
+    const distKm = this.getDistanceFromHDBinKM(target);
 
     let score = Math.min(1, distKm / MAX_WALKING_DIST_KM);
 
@@ -310,7 +297,7 @@ class Hdb extends UrbanDataObject {
    * @description loads relevant attributes from HDB objects
    * @return the rendered side panel
    */
-  getSidePanel({ closeSidePanel, popCache, filteredHdbs }) {
+  getSidePanel({ closeSidePanel, pushCache, popCache, filteredHdbs }) {
     const formatPrice = (price) => {
       return Number(price).toLocaleString();
     };
@@ -353,41 +340,67 @@ class Hdb extends UrbanDataObject {
                 <BsHouse /> {this.floor_area_sqm} m²
               </p>
               <p>
-                <FaRestroom /> Block: {this.block}
+                <IoSchoolOutline /> Nearest School:{" "}
+                {this.nearestSchools?.[0]
+                  ? `${this.getDistanceFromHDBinKM(
+                      this.nearestSchools[0]
+                    ).toFixed(2)} km`
+                  : "N/A"}
               </p>
-              <p>
-                <FaMosquito /> Dengue: 1000
-              </p>
-              <p>
-                <FaTrainSubway /> Nearest Train: 3 min
-              </p>
-            </div>
-
-            <div className="list-container">
               {this.nearestSchools.map((school, index) => {
                 return (
-                  <div key={index} className="list-item">
+                  <div
+                    key={index}
+                    className="list-item"
+                    onClick={() => {
+                      pushCache(school);
+                    }}
+                  >
                     {school.school_name}
                     <Bar value={this.getDistanceScore(school)} />
                   </div>
                 );
               })}
-            </div>
-            <div className="list-container">
+              <p>
+                <FaTrainSubway /> Nearest MRT:{" "}
+                {this.nearestMRT?.[0]
+                  ? `${this.getDistanceFromHDBinKM(this.nearestMRT[0]).toFixed(
+                      2
+                    )} km`
+                  : "N/A"}
+              </p>
               {this.nearestMRT.map((mrt, index) => {
                 return (
-                  <div key={index} className="list-item">
+                  <div
+                    key={index}
+                    className="list-item"
+                    onClick={() => {
+                      pushCache(mrt);
+                    }}
+                  >
                     {mrt.name}
                     <Bar value={this.getDistanceScore(mrt)} />
                   </div>
                 );
               })}
-            </div>
-            <div className="list-container">
+              <p>
+                <FaMosquito /> Nearest Dengue Cluster:{" "}
+                {this.nearestDengue?.[0]
+                  ? `${this.getDistanceFromHDBinKM(
+                      this.nearestDengue[0]
+                    ).toFixed(2)} km`
+                  : "N/A"}
+              </p>
               {this.nearestDengue.map((dengue, index) => {
                 return (
-                  <div key={index} className="list-item">
-                    {dengue.caseSize}
+                  <div
+                    key={index}
+                    className="list-item"
+                    onClick={() => {
+                      pushCache(dengue);
+                    }}
+                  >
+                    Cluster Size: {dengue.caseSize} Cases
                     <Bar value={this.getDengueDistanceScore(dengue)} />
                   </div>
                 );
