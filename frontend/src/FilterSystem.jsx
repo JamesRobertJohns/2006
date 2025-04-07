@@ -245,6 +245,7 @@ function FilterSystem() {
   const selectedRegionId = regionToIdMap[selected.region] || "";
   return (
     <>
+      <div className="wrapper">
       <div className="filter-bar-box">
         <Filter
           optionName="Region"
@@ -289,10 +290,10 @@ function FilterSystem() {
           className={`button ${isAllSelected ? "active" : "disabled"}`}
           onClick={handleSearch}
           disabled={!isAllSelected}
-          style={{margin:'6em'}}
         >
           Find
         </button>
+      </div>
       </div>
     </>
   );
