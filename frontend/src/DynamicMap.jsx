@@ -254,7 +254,10 @@ function DynamicMap() {
 
   useMemo(() => {
     const allLoaded =
-      filteredHdbs.length > 0 && MRTs.length > 0 && Schools.length > 0;
+      filteredHdbs.length > 0 &&
+      MRTs.length > 0 &&
+      Schools.length > 0 &&
+      trafficCameras.length > 0;
 
     if (allLoaded) {
       console.log("Running calculation...");
@@ -268,7 +271,7 @@ function DynamicMap() {
       });
     }
     console.log("[+] in useEffect() to get nearest attributes: done");
-  }, [filteredHdbs, MRTs, Schools]);
+  }, [filteredHdbs, MRTs, Schools, trafficCameras]);
 
   useEffect(() => {
     console.log("update ranking");
