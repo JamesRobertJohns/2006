@@ -234,7 +234,7 @@ class Hdb extends UrbanDataObject {
           .slice()
           .reverse()
           .find((x) => x <= q3 + 1.5 * IQR) || array[array.length - 1];
-      console.log(array);
+      // console.log(array);
       return { lo, q1, q2, q3, hi };
     };
 

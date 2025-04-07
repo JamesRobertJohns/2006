@@ -232,7 +232,7 @@ function DynamicMap() {
   /**
    * On load,set TrafficCamera, MRT and School arrays
    */
-  useEffect(() => {
+  useMemo(() => {
     fetchTrafficCameras(setTrafficCameras);
     fetchDengue(setDengues);
     fetchMrt(setMRTs);
@@ -252,7 +252,7 @@ function DynamicMap() {
     }
   }, [cache]);
 
-  useEffect(() => {
+  useMemo(() => {
     const allLoaded =
       filteredHdbs.length > 0 && MRTs.length > 0 && Schools.length > 0;
 
@@ -267,6 +267,7 @@ function DynamicMap() {
         hdb.setNearestDengue(getNearestNLocations(dengues, hdb, 1));
       });
     }
+    console.log("[+] in useEffect() to get nearest attributes: done");
   }, [filteredHdbs, MRTs, Schools]);
 
   useEffect(() => {
@@ -275,7 +276,7 @@ function DynamicMap() {
       (a, b) => b.getTotalScore(weights) - a.getTotalScore(weights)
     );
 
-    console.log(sorted);
+    // console.log(sorted);
 
     const seen = new Set();
     const uniqueHdbs = sorted.filter((hdb) => {
@@ -286,7 +287,7 @@ function DynamicMap() {
 
     console.log("sorted hdb by score");
     setRecommendedHdbs(uniqueHdbs);
-  }, [weights, filteredHdbs]);
+  }, [weights]);
 
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
@@ -313,7 +314,7 @@ function DynamicMap() {
                     key={index}
                     className="list-item"
                     onClick={() => {
-                      console.log("clicked", hdb);
+                      // console.log("clicked", hdb);
                       setActiveHdb(hdb);
                     }}
                   >
