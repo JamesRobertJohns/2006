@@ -5,9 +5,8 @@ import Navbar from 'react-bootstrap/Navbar';
 
 /** 
  * Boostraps header component with navigation 
- *
- * @author Jia Yang
-  */
+ **/
+
 function Header() {
   return (
     <>

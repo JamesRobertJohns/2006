@@ -16,6 +16,24 @@ function Stats() {
   };
 
 
+  /** Facade design pattern to encapsulate the calculation of price statistics
+   * (quartiles and inner fences) for a specific room type within a region.
+   * This function calculates the lower (lo), first quartile (q1), median (q2),
+   * third quartile (q3), and upper (hi) fences based on the resale prices of
+   * flats in a given region and room type.
+   *
+   * @param {array} region - An array of flat objects containing details like
+   * `flat_type` and `resale_price`. 
+   * @param {string} room - The room type (e.g., "3-room", "4-room", etc.) 
+   * for which price statistics are to be calculated.
+   * 
+   * @returns {Object} An object containing the following price statistics: 
+   *    - {number} lo - The lower inner fence (1.5 * IQR below the first quartile). 
+   *    - {number} q1 - The first quartile (25th percentile). 
+   *    - {number} q2 - Themedian (50th percentile). 
+   *    - {number} q3 - The third quartile (75thpercentile). 
+   *    - {number} hi - The upper inner fence (1.5 * IQR above the third quartile).
+   */  
   const getPriceStats = (region, room) => {
     const array = [];
     region.forEach((item) => {
@@ -52,6 +70,26 @@ function Stats() {
   };
 
 
+ /**
+ * Calculates the distribution of flat types within a given region.
+ * This function counts the number of flats of each type (2 ROOM, 3 ROOM, etc.)
+ * within the provided region data and returns the count for each flat type.
+ *
+ * @param {array} region - An array of flat objects containing a `flat_type` property.
+ * 
+ * @returns {Object} An object containing the count of flats for each flat type:
+ *   - '2 ROOM': The count of 2-room flats.
+ *   - '3 ROOM': The count of 3-room flats.
+ *   - '4 ROOM': The count of 4-room flats.
+ *   - '5 ROOM': The count of 5-room flats.
+ *   - 'EXECUTIVE': The count of executive flats.
+ * 
+ * @example
+ * getFlatDistributionStats(region);
+ * Returns: { '2 ROOM': 5, '3 ROOM': 10, '4 ROOM': 7, '5 ROOM': 3, 'EXECUTIVE': 2 }
+ *
+ * @author: jiayang
+ */ 
   const getFlatDistributionStats = (region) => {
 
     const dataContainer = {

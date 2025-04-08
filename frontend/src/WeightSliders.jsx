@@ -1,5 +1,15 @@
 import React, { useState } from "react";
 
+/**
+ * Construct an adjustable slider within the range 0 to 1 with step 
+ * of 0.01 using <input> component
+ *
+ * @param {weights} weight of the metric
+ * @param {onChange} function pointer to event handler
+ *
+ * @return {JSX.Element} the slider component
+ * @author Bryan
+ */
 const WeightSliders = ({ weights, onChange }) => {
   const [localWeights, setLocalWeights] = useState(weights);
 
