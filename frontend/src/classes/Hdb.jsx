@@ -125,6 +125,28 @@ class Hdb extends UrbanDataObject {
     return this.resale_price;
   }
 
+  /** 
+   * Calculates the total weighted score based on proximity to the nearest
+   * school, MRT, and dengue cluster.
+   *
+   * Each score is computed using a distance-based scoring method, and then
+   * weighted according to the values provided in the `weights` parameter.
+   *
+   * @author: Bryan
+   * 
+   * @param {Object} weights - An object containing weight values for each
+   * factor. 
+   * @param {number} weights.school - The weight to apply to the school
+   * proximity score. 
+   * @param {number} weights.mrt - The weight to apply to the
+   * MRT proximity score. 
+   * @param {number} weights.dengue - The weight to apply to
+   * the dengue proximity score.
+   * 
+   * @returns {number|undefined} The total weighted score, or `undefined` if
+   * weights are not provided.
+   */
+
   getTotalScore(weights) {
     const schoolTarget = this.nearestSchools?.[0];
     const mrtTarget = this.nearestMRT?.[0];

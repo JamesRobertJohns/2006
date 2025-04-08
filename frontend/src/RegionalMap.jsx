@@ -1,6 +1,18 @@
 import React from "react";
 import "./RegionalMap.css";
 
+/**
+ * Renders a custom SVG graphic.
+ * 
+ * @description for each region, trace the path and assign a id. select the
+ * id to apply css to highlight the spotlight region when selected and
+ * apply gray colour to non-spotlight regions
+ *
+ * @return {JSX.Element} the returned svg
+ *
+ * @Author Johnson
+ */
+
 const RegionalMap = ({ selectedRegion }) => {
   const handleRegionClick = (regionId) => {
     console.log(`Clicked on region: ${regionId}`);

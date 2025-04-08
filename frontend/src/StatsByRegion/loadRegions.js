@@ -2,6 +2,12 @@ import { useState, useEffect } from "react";
 import Hdb from "../classes/Hdb.jsx";
 import TownToRegionMap from "../TownToRegion.json";
 
+/**
+ * custom hook that loads and returns
+ * all the housing information
+ *
+ * @return {array} regions - all hdb information
+ */
 export function loadRegions() {
   const [regions, setRegions] = useState({
     north: [],

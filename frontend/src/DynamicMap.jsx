@@ -18,6 +18,9 @@ const initialLongitude = 103.81895378099354;
 const initialLatitude = 1.356474868742945;
 const initialZoom = 11.6;
 
+/**
+ * attempts to fetch data 
+ */
 const fetchTrafficCameras = async (setTrafficCameras) => {
   try {
     const response = await fetch(
